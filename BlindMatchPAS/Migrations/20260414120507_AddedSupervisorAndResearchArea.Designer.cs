@@ -3,6 +3,7 @@ using BlindMatchPAS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlindMatchPAS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414120507_AddedSupervisorAndResearchArea")]
+    partial class AddedSupervisorAndResearchArea
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,11 @@ namespace BlindMatchPAS.Migrations
                     b.Property<bool>("IsMatched")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ResearchAreaId")
+                    b.Property<string>("ResearchArea")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ResearchAreaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
@@ -106,13 +113,9 @@ namespace BlindMatchPAS.Migrations
 
             modelBuilder.Entity("BlindMatchPAS.Models.ProjectProposal", b =>
                 {
-                    b.HasOne("BlindMatchPAS.Models.ResearchArea", "ResearchArea")
+                    b.HasOne("BlindMatchPAS.Models.ResearchArea", null)
                         .WithMany("ProjectProposals")
-                        .HasForeignKey("ResearchAreaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ResearchArea");
+                        .HasForeignKey("ResearchAreaId");
                 });
 
             modelBuilder.Entity("BlindMatchPAS.Models.Supervisor", b =>

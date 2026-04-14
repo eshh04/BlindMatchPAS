@@ -20,11 +20,17 @@ namespace BlindMatchPAS.Models
         [Required]
         public string TechnicalStack { get; set; }
 
-        [Required]
-        public string ResearchArea { get; set; }
-
         // Logic for Blind Match status
         public bool IsMatched { get; set; } = false;
         public string Status { get; set; } = "Pending";
+
+        // --- NEW RELATIONSHIP ADDED BELOW ---
+
+        // Foreign Key for ResearchArea Table
+        [Required(ErrorMessage = "Please select a Research Area")]
+        public int ResearchAreaId { get; set; }
+
+        // Navigation property: Connects this proposal to a specific Research Area object
+        public ResearchArea? ResearchArea { get; set; }
     }
 }
