@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using BlindMatchPAS.Data;
+using BlindMatchPAS.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+// Seed Data Logic
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+
+    // Check if there are any Research Areas already
+    if (!context.ResearchAreas.Any())
+    {
+        context.ResearchAreas.AddRange(
+            new ResearchArea { Name = "Artificial Intelligence" },
+            new ResearchArea { Name = "Web Development" },
+            new ResearchArea { Name = "Mobile Application Development" },
+            new ResearchArea { Name = "Cyber Security" }
+        );
+        context.SaveChanges();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

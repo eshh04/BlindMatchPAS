@@ -46,6 +46,8 @@ namespace BlindMatchPAS.Controllers
         // GET: ProjectProposals/Create
         public IActionResult Create()
         {
+            // Fetch research areas from DB to show in the dropdown
+            ViewBag.ResearchAreaId = new SelectList(_context.ResearchAreas, "Id", "Name");
             return View();
         }
 

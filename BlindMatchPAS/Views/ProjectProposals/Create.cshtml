@@ -28,9 +28,11 @@
                 <span asp-validation-for="TechnicalStack" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ResearchArea" class="control-label"></label>
-                <input asp-for="ResearchArea" class="form-control" />
-                <span asp-validation-for="ResearchArea" class="text-danger"></span>
+                <label asp-for="ResearchAreaId" class="control-label">Research Area</label>
+                <select asp-for="ResearchAreaId" class="form-control" asp-items="ViewBag.ResearchAreaId">
+                    <option value="">-- Select Research Area --</option>
+                </select>
+                <span asp-validation-for="ResearchAreaId" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
