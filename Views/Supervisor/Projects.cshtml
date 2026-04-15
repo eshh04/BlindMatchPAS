@@ -1,0 +1,108 @@
+@model SupervisorBrowseProjectsViewModel
+@{
+    ViewData["Title"] = "Browse Projects";
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1>Browse Available Projects</h1>
+        <p class="text-muted">Projects matching your research interests</p>
+    </div>
+    <div class="col-auto">
+        <a asp-action="Preferences" class="btn btn-secondary">Manage Preferences</a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!Model.Preferences.Any())
+{
+    <div class="alert alert-warning">
+        <strong>No research areas selected</strong>
+        <p class="mb-0">Set your research area preferences to start browsing projects that match your interests.</p>
+    </div>
+    <a asp-action="Preferences" class="btn btn-primary">Configure Preferences</a>
+}
+else if (!Model.Projects.Any())
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <p class="text-muted mb-3">No projects available in your research areas yet.</p>
+            <a asp-action="Dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row gap-3">
+        @foreach (var project in Model.Projects)
+        {
+            var isInterested = Model.SupervisorInterests.Contains(project.Id);
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">@project.Title.Substring(0, Math.Min(35, project.Title.Length))@(project.Title.Length > 35 ? "..." : "")</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text small">@project.Abstract.Substring(0, Math.Min(120, project.Abstract.Length))...</p>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">Research Area</small>
+                            <p class="mb-0">@project.ResearchArea?.Name</p>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(project.TechStack))
+                        {
+                            <div class="mb-3">
+                                <small class="text-muted">Tech Stack</small>
+                                <p class="mb-0 small">@project.TechStack</p>
+                            </div>
+                        }
+
+                        <div class="d-flex gap-2 mb-3 flex-wrap">
+                            <span class="badge badge-secondary text-muted" style="background: rgba(255,255,255,0.05);">
+                                @project.SubmittedAt.ToString("MMM d, yyyy")
+                            </span>
+                            @if (isInterested)
+                            {
+                                <span class="badge badge-primary">Already Interested</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        @if (isInterested)
+                        {
+                            <button type="button" class="btn btn-sm btn-secondary w-100" disabled>
+                                ✓ Interest Recorded
+                            </button>
+                        }
+                        else
+                        {
+                            <form method="post" asp-action="ExpressInterest" asp-route-projectId="@project.Id" style="display:inline; width:100%;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-primary w-100">
+                                    Express Interest
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

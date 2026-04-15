@@ -1,0 +1,126 @@
+@model SupervisorPreferencesViewModel
+@{
+    ViewData["Title"] = "Research Area Preferences";
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1>Your Research Area Preferences</h1>
+        <p class="text-muted">Set your research interests in order of preference. Projects are matched based on these preferences.</p>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Current Preferences (Draggable) -->
+        @if (Model.Preferences.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Preferences (Priority Order)</h5>
+                </div>
+                <div class="card-body">
+                    <div id="preferencesContainer">
+                        @foreach (var pref in Model.Preferences)
+                        {
+                            <div class="preference-item mb-2 p-3 border rounded d-flex justify-content-between align-items-center" data-id="@pref.Id">
+                                <div>
+                                    <strong>@pref.PreferenceRank.</strong> @pref.ResearchArea?.Name
+                                </div>
+                                <form method="post" asp-action="RemovePreference" asp-route-preferenceId="@pref.Id" style="display: inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this preference?')">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Add New Preference -->
+        @if (Model.AvailableAreas.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Add Research Area</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="AddPreference">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group mb-3">
+                            <label class="form-label">Select a research area to add:</label>
+                            <select name="researchAreaId" class="form-select" required>
+                                <option value="">-- Choose Research Area --</option>
+                                @foreach (var area in Model.AvailableAreas)
+                                {
+                                    <option value="@area.Id">@area.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add to Preferences</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else if (Model.Preferences.Count > 0)
+        {
+            <div class="alert alert-info">
+                You have already selected all available research areas.
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">All Research Areas</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    @foreach (var area in Model.AllResearchAreas)
+                    {
+                        var isPref = Model.Preferences.Any(ep => ep.ResearchAreaId == area.Id);
+                        <li class="mb-2">
+                            @if (isPref)
+                            {
+                                <span class="badge bg-success">Added</span>
+                            }
+                            @area.Name
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .preference-item {
+        background: rgba(100, 200, 255, 0.05);
+        border: 1px solid rgba(100, 200, 255, 0.2) !important;
+        cursor: grab;
+    }
+
+    .preference-item:hover {
+        background: rgba(100, 200, 255, 0.1);
+    }
+</style>
