@@ -12,6 +12,7 @@ namespace BlindMatchPAS.Models
         public string Name { get; set; } = string.Empty;
 
         // Navigation property: One research area can have many project proposals
-        public ICollection<ProjectProposal>? ProjectProposals { get; set; }
+        // Initialized with a new list to prevent null reference issues
+        public ICollection<ProjectProposal> ProjectProposals { get; set; } = new List<ProjectProposal>();
     }
 }

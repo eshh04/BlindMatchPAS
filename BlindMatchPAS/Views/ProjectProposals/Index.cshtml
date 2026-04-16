@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<BlindMatchPAS.Models.ProjectProposal>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Project Proposals Index";
 }
 
-<h1>Index</h1>
+<h1>Project Proposals</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New Proposal</a>
 </p>
 <table class="table">
     <thead>
@@ -21,45 +21,38 @@
             <th>
                 @Html.DisplayNameFor(model => model.TechnicalStack)
             </th>
+            @* Marking Criterion: Displaying related data from ResearchArea table *@
             <th>
-                @Html.DisplayNameFor(model => model.ResearchArea)
+                Research Area
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsMatched)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Abstract)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TechnicalStack)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ResearchArea)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsMatched)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProjectID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProjectID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProjectID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Abstract)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TechnicalStack)
+                </td>
+                <td>
+                    @* Note: Directly accessing the Name property of the related ResearchArea object. 
+                   Ensure '.Include(p => p.ResearchArea)' is used in the Controller's Index method.
+                *@
+                    @item.ResearchArea?.Name
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProjectID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProjectID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProjectID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

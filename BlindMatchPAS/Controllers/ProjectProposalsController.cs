@@ -22,7 +22,9 @@ namespace BlindMatchPAS.Controllers
         // GET: ProjectProposals
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ProjectProposals.ToListAsync());
+            // Inclusion of ResearchArea to display the name in the list
+            var proposals = await _context.ProjectProposals.Include(p => p.ResearchArea).ToListAsync();
+            return View(proposals);
         }
 
         // GET: ProjectProposals/Details/5
@@ -34,7 +36,9 @@ namespace BlindMatchPAS.Controllers
             }
 
             var projectProposal = await _context.ProjectProposals
+                .Include(p => p.ResearchArea)
                 .FirstOrDefaultAsync(m => m.ProjectID == id);
+
             if (projectProposal == null)
             {
                 return NotFound();
@@ -46,17 +50,16 @@ namespace BlindMatchPAS.Controllers
         // GET: ProjectProposals/Create
         public IActionResult Create()
         {
-            // Fetch research areas from DB to show in the dropdown
+            // Populate the dropdown with Research Areas from DB
             ViewBag.ResearchAreaId = new SelectList(_context.ResearchAreas, "Id", "Name");
             return View();
         }
 
         // POST: ProjectProposals/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProjectID,Title,Abstract,TechnicalStack,ResearchArea,IsMatched,Status")] ProjectProposal projectProposal)
+        // FIXED: Changed 'ResearchArea' to 'ResearchAreaId' in the Bind attribute
+        public async Task<IActionResult> Create([Bind("ProjectID,Title,Abstract,TechnicalStack,ResearchAreaId,IsMatched,Status")] ProjectProposal projectProposal)
         {
             if (ModelState.IsValid)
             {
@@ -64,6 +67,9 @@ namespace BlindMatchPAS.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            // If validation fails, reload the dropdown data before returning to view
+            ViewBag.ResearchAreaId = new SelectList(_context.ResearchAreas, "Id", "Name", projectProposal.ResearchAreaId);
             return View(projectProposal);
         }
 
@@ -80,15 +86,16 @@ namespace BlindMatchPAS.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.ResearchAreaId = new SelectList(_context.ResearchAreas, "Id", "Name", projectProposal.ResearchAreaId);
             return View(projectProposal);
         }
 
         // POST: ProjectProposals/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProjectID,Title,Abstract,TechnicalStack,ResearchArea,IsMatched,Status")] ProjectProposal projectProposal)
+        // FIXED: Changed 'ResearchArea' to 'ResearchAreaId' in the Bind attribute
+        public async Task<IActionResult> Edit(int id, [Bind("ProjectID,Title,Abstract,TechnicalStack,ResearchAreaId,IsMatched,Status")] ProjectProposal projectProposal)
         {
             if (id != projectProposal.ProjectID)
             {
@@ -115,6 +122,7 @@ namespace BlindMatchPAS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.ResearchAreaId = new SelectList(_context.ResearchAreas, "Id", "Name", projectProposal.ResearchAreaId);
             return View(projectProposal);
         }
 
@@ -127,7 +135,9 @@ namespace BlindMatchPAS.Controllers
             }
 
             var projectProposal = await _context.ProjectProposals
+                .Include(p => p.ResearchArea)
                 .FirstOrDefaultAsync(m => m.ProjectID == id);
+
             if (projectProposal == null)
             {
                 return NotFound();
@@ -145,9 +155,9 @@ namespace BlindMatchPAS.Controllers
             if (projectProposal != null)
             {
                 _context.ProjectProposals.Remove(projectProposal);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

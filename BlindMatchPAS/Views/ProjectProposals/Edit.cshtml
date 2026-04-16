@@ -1,49 +1,51 @@
 ﻿@model BlindMatchPAS.Models.ProjectProposal
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Proposal";
 }
 
 <h1>Edit</h1>
 
-<h4>ProjectProposal</h4>
+<h4>Project Proposal</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="ProjectID" />
+
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Abstract" class="control-label"></label>
-                <input asp-for="Abstract" class="form-control" />
+                <textarea asp-for="Abstract" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="Abstract" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="TechnicalStack" class="control-label"></label>
                 <input asp-for="TechnicalStack" class="form-control" />
                 <span asp-validation-for="TechnicalStack" class="text-danger"></span>
             </div>
+
+            @* Update: Using a Dropdown for Research Area to ensure data integrity.
+               We use ResearchAreaId to link with the foreign key in the database.
+            *@
             <div class="form-group">
-                <label asp-for="ResearchArea" class="control-label"></label>
-                <input asp-for="ResearchArea" class="form-control" />
-                <span asp-validation-for="ResearchArea" class="text-danger"></span>
+                <label asp-for="ResearchAreaId" class="control-label">Research Area</label>
+                <select asp-for="ResearchAreaId" class="form-control" asp-items="ViewBag.ResearchAreaId"></select>
+                <span asp-validation-for="ResearchAreaId" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsMatched" /> @Html.DisplayNameFor(model => model.IsMatched)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+
+            @* Note: 'IsMatched' and 'Status' are removed from this view. 
+               These internal fields should be handled by the backend system.
+            *@
+
+            <div class="form-group mt-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -55,5 +57,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
