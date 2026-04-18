@@ -1,0 +1,44 @@
+@model RevealedMatchDto
+@{
+    ViewData["Title"] = "Student Details - Your Match";
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title mb-0">👁️ Matched Student Details</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success mb-4">
+                    Here are the details of the student matched with your project:
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-muted small">Student Name</h5>
+                    <h4 class="mb-0">@Model.PersonFullName</h4>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-muted small">Email</h5>
+                    <p class="mb-0">
+                        <a href="mailto:@Model.PersonEmail">@Model.PersonEmail</a>
+                    </p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-muted small">Project</h5>
+                    <p class="mb-0">@Model.ExtraInfo</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="text-muted small">Match Confirmed</h5>
+                    <p class="mb-0">@Model.MatchedAt.ToString("MMMM d, yyyy")</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/Supervisor/Dashboard" class="btn btn-primary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>

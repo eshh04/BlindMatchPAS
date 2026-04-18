@@ -1,0 +1,78 @@
+@model MatchStatusViewModel
+@{
+    ViewData["Title"] = "Match Status";
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <h2 class="mb-4">@Model.Project?.Title</h2>
+
+        @if (Model.IsMatched)
+        {
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-check-circle me-2"></i>Matched!</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Your project has been successfully matched with a supervisor.</p>
+
+                    @if (Model.IsSupervisorRevealed)
+                    {
+                        <a asp-action="Reveal" asp-route-projectId="@Model.Project!.Id" class="btn btn-primary w-100">
+                            <i class="bi bi-eye me-2"></i>View Supervisor Details
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">
+                            Your supervisor's details will be revealed once they confirm the match.
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0"><i class="bi bi-hourglass-split me-2"></i>Awaiting Match</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Status Pipeline -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="text-center">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center @(Model.Project?.Status >= ProjectStatus.Pending ? "bg-success" : "bg-secondary") text-white" style="width:40px;height:40px;">
+                                    <i class="bi bi-check"></i>
+                                </div>
+                                <div class="small mt-1">Submitted</div>
+                            </div>
+                            <div class="flex-grow-1 mx-2" style="height:2px;background:@(Model.Project?.Status >= ProjectStatus.UnderReview ? "#198754" : "#dee2e6")"></div>
+                            <div class="text-center">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center @(Model.Project?.Status >= ProjectStatus.UnderReview ? "bg-success" : "bg-secondary") text-white" style="width:40px;height:40px;">
+                                    <i class="bi bi-search"></i>
+                                </div>
+                                <div class="small mt-1">Under Review</div>
+                            </div>
+                            <div class="flex-grow-1 mx-2" style="height:2px;background:@(Model.Project?.Status >= ProjectStatus.Matched ? "#198754" : "#dee2e6")"></div>
+                            <div class="text-center">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center @(Model.Project?.Status >= ProjectStatus.Matched ? "bg-success" : "bg-secondary") text-white" style="width:40px;height:40px;">
+                                    <i class="bi bi-link-45deg"></i>
+                                </div>
+                                <div class="small mt-1">Matched</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="mb-0 text-muted">Your project is currently under review. Supervisors will be matched once the matching algorithm is run.</p>
+                </div>
+            </div>
+        }
+
+        <div class="mt-3">
+            <a asp-controller="Student" asp-action="Dashboard" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
