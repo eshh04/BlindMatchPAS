@@ -1,0 +1,49 @@
+@model List<AdminBackend.Models.Supervisor>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Supervisors";
+    ViewData["ActivePage"] = "Supervisor";
+}
+
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+    <div>
+        <h1 class="page-title">Supervisors</h1>
+        <p class="page-subtitle">MANAGEMENT // STAFF DIRECTORY</p>
+    </div>
+    <a href="@Url.Action("Create", "Supervisor")" class="nothing-button btn-sm">+ New Supervisor</a>
+</div>
+
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <span class="table-title">All Supervisors (@Model.Count)</span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Assigned Projects</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var supervisor in Model)
+            {
+                var projectCount = AdminBackend.Services.MockDataService.Projects.Count(p => p.SupervisorId == supervisor.Id);
+                <tr>
+                    <td>@supervisor.Id</td>
+                    <td>@supervisor.Name</td>
+                    <td style="color: var(--text-muted);">@supervisor.Department</td>
+                    <td><span style="color: var(--accent-blue); font-family: var(--font-heading);">@projectCount</span></td>
+                    <td>
+                        <form method="post" asp-action="Delete" asp-controller="Supervisor" style="margin:0;">
+                            <input type="hidden" name="id" value="@supervisor.Id" />
+                            <button type="submit" class="nothing-button btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

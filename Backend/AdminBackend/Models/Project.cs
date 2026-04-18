@@ -12,7 +12,11 @@ namespace AdminBackend.Models
         
         public string Abstract { get; set; } = string.Empty;
         
-        public string StudentName { get; set; } = string.Empty;
+        [Required]
+        public int StudentId { get; set; }
+
+        [ForeignKey("StudentId")]
+        public Student? Student { get; set; }
 
         public int ResearchAreaId { get; set; }
         

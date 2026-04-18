@@ -150,4 +150,5 @@ C:\Users\user\Downloads\zip\Backend\AdminBackend\bin\Debug\net10.0\dotnet-tools.
 C:\Users\user\Downloads\zip\Backend\AdminBackend\bin\Debug\net10.0\AdminBackend.staticwebassets.runtime.json
 C:\Users\user\Downloads\zip\Backend\AdminBackend\obj\Debug\net10.0\AdminBackend.RazorAssemblyInfo.cache
 C:\Users\user\Downloads\zip\Backend\AdminBackend\obj\Debug\net10.0\AdminBackend.RazorAssemblyInfo.cs
-C:\Users\user\Downloads\zip\Backend\AdminBackend\obj\Debug\net10.0\compressed\1ic1e7m9r1-{0}-mocwl2994g-mocwl2994g.gz
+C:\Users\user\Downloads\zip\Backend\AdminBackend\obj\Debug\net10.0\AdminBackend.sourcelink.json
+C:\Users\user\Downloads\zip\Backend\AdminBackend\obj\Debug\net10.0\compressed\1ic1e7m9r1-{0}-7adlatql8t-7adlatql8t.gz

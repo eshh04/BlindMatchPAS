@@ -1,0 +1,70 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActivePage"] = "Dashboard";
+}
+
+<div class="page-header">
+    <h1 class="page-title">System Overview</h1>
+    <p class="page-subtitle">DASHBOARD // REAL-TIME STATUS</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Projects</div>
+        <div class="stat-value stat-accent-blue">@ViewBag.TotalProjects</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Supervisors</div>
+        <div class="stat-value stat-accent-yellow">@ViewBag.TotalSupervisors</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Research Areas</div>
+        <div class="stat-value stat-accent-green">@ViewBag.TotalResearchAreas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Revealed</div>
+        <div class="stat-value stat-accent-green">@ViewBag.RevealedCount</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value stat-accent-red">@ViewBag.PendingCount</div>
+    </div>
+</div>
+
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <span class="table-title">Quick Actions</span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Section</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Research Areas</td>
+                <td style="color: var(--text-muted);">Manage categories and domains</td>
+                <td><a href="@Url.Action("Index", "ResearchArea")" class="nothing-button btn-sm btn-outline">Open →</a></td>
+            </tr>
+            <tr>
+                <td>Allocation</td>
+                <td style="color: var(--text-muted);">Assign supervisors to projects</td>
+                <td><a href="@Url.Action("AllocationOverview", "Admin")" class="nothing-button btn-sm btn-outline">Open →</a></td>
+            </tr>
+            <tr>
+                <td>User Management</td>
+                <td style="color: var(--text-muted);">View and manage supervisors</td>
+                <td><a href="@Url.Action("UserManagement", "Admin")" class="nothing-button btn-sm btn-outline">Open →</a></td>
+            </tr>
+            <tr>
+                <td>Analysis</td>
+                <td style="color: var(--text-muted);">Project distribution and stats</td>
+                <td><a href="@Url.Action("Analysis", "Admin")" class="nothing-button btn-sm btn-outline">Open →</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

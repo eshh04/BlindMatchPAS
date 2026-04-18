@@ -1,0 +1,62 @@
+@model List<AdminBackend.Models.AdminUser>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Admin Settings";
+    ViewData["ActivePage"] = "AdminUsers";
+}
+
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+    <div>
+        <h1 class="page-title">Administrator Management</h1>
+        <p class="page-subtitle">SETTINGS // ACCESS CONTROL</p>
+    </div>
+    <a href="@Url.Action("CreateAdmin", "Admin")" class="nothing-button btn-sm">+ New Admin</a>
+</div>
+
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <span class="table-title">System Administrators (@Model.Count)</span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email Address</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var admin in Model)
+            {
+                <tr>
+                    <td>@admin.Id</td>
+                    <td>@admin.Email</td>
+                    <td><span class="badge" style="color: var(--accent-yellow); border-color: var(--accent-yellow);">Primary Admin</span></td>
+                    <td>
+                        @if (Model.Count > 1)
+                        {
+                            <form method="post" asp-action="DeleteAdmin" asp-controller="Admin" style="margin:0;">
+                                <input type="hidden" name="id" value="@admin.Id" />
+                                <button type="submit" class="nothing-button btn-sm btn-danger">Revoke Access</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span style="color: var(--text-muted); font-size: 0.65rem;">Fixed</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="form-card" style="margin-top: 2rem;">
+    <h3 style="font-family: var(--font-heading); font-size: 0.8rem; margin-top: 0;">Security Guidelines</h3>
+    <ul style="color: var(--text-secondary); font-size: 0.8rem; padding-left: 1.25rem;">
+        <li>Administrators have full read/write access to all modules.</li>
+        <li>Revoked access is immediate and clears the target user's session.</li>
+        <li>System requires at least one primary administrator at all times.</li>
+    </ul>
+</div>

@@ -4,28 +4,24 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - PAS Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/nothing.css" asp-append-version="true" />
 </head>
-<body>
-    <div class="nothing-container">
-        <header class="nothing-header">
-            <h1 class="nothing-title">Blind-Match PAS</h1>
-            <div class="nothing-dot-matrix">ADMIN.PORTAL // LOGIN_REQUIRED</div>
+<body class="login-page">
+    <div class="login-container">
+        <header class="login-header">
+            <h1 class="login-title">Blind-Match PAS</h1>
+            <div class="login-subtitle">ADMIN.PORTAL // SECURE_ACCESS</div>
         </header>
-        
-        <main role="main">
+
+        <main>
             @RenderBody()
         </main>
 
-        <footer class="nothing-footer">
-            <span>© 2026 NOTHING DESIGN</span>
-            <span>SECURE.TRANSMISSION</span>
+        <footer class="login-footer">
+            <span>&copy; 2026 PAS.SYSTEM</span>
+            <span>ENCRYPTED.LINK</span>
         </footer>
     </div>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

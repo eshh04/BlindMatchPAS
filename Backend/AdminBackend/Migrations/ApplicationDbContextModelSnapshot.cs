@@ -50,6 +50,38 @@ namespace AdminBackend.Migrations
                     b.HasIndex("SupervisorId");
 
                     b.ToTable("Projects");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Abstract = "Developing an AI system to assist in code reviews",
+                            IsRevealed = false,
+                            ResearchAreaId = 1,
+                            StudentName = "John Doe",
+                            SupervisorId = 1,
+                            Title = "AI-Powered Code Review System"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Abstract = "Analyzing security vulnerabilities in blockchain implementations",
+                            IsRevealed = true,
+                            ResearchAreaId = 2,
+                            StudentName = "Jane Smith",
+                            SupervisorId = 2,
+                            Title = "Blockchain Security Analysis"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Abstract = "Optimizing React applications for better performance",
+                            IsRevealed = false,
+                            ResearchAreaId = 3,
+                            StudentName = "Bob Wilson",
+                            SupervisorId = 3,
+                            Title = "React Performance Optimization"
+                        });
                 });
 
             modelBuilder.Entity("AdminBackend.Models.ResearchArea", b =>
@@ -108,6 +140,32 @@ namespace AdminBackend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Supervisors");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Department = "Computer Science",
+                            Name = "Dr. Alice Johnson"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Department = "Information Security",
+                            Name = "Prof. Bob Smith"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Department = "Software Engineering",
+                            Name = "Dr. Carol Williams"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Department = "Data Science",
+                            Name = "Prof. David Brown"
+                        });
                 });
 
             modelBuilder.Entity("AdminBackend.Models.Project", b =>

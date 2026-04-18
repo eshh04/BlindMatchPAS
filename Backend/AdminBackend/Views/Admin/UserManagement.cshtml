@@ -1,0 +1,42 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "User Management";
+    ViewData["ActivePage"] = "Users";
+
+    var supervisors = (List<AdminBackend.Models.Supervisor>)ViewBag.Supervisors;
+}
+
+<div class="page-header">
+    <h1 class="page-title">User Management</h1>
+    <p class="page-subtitle">SUPERVISORS // REGISTERED USERS</p>
+</div>
+
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <span class="table-title">All Supervisors</span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Assigned Projects</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sup in supervisors)
+            {
+                var assignedCount = AdminBackend.Services.MockDataService.Projects.Count(p => p.SupervisorId == sup.Id);
+                <tr>
+                    <td>@sup.Id</td>
+                    <td>@sup.Name</td>
+                    <td>@sup.Department</td>
+                    <td>
+                        <span style="color: var(--accent-blue); font-family: var(--font-heading);">@assignedCount</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

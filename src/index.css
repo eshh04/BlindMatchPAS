@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "Courier New", Courier, monospace;
+  
+  --color-bg: #050505;
+  --color-surface: #0F0F0F;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-accent: #E0E0E0;
+  --color-text-main: #FFFFFF;
+  --color-text-dim: #888888;
+  --color-red-dot: #FF4444;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text-main selection:bg-white selection:text-black antialiased;
+  }
+}
+
+@layer components {
+  .theme-border {
+    @apply border border-border;
+  }
+  
+  .theme-card {
+    @apply bg-surface border border-border p-6;
+  }
+  
+  .theme-label {
+    @apply text-[11px] uppercase tracking-[0.1em] text-text-dim;
+  }
+  
+  .theme-value {
+    @apply text-2xl font-mono;
+  }
+
+  .role-badge {
+    @apply inline-block px-2 py-1 border border-border text-[10px] uppercase font-mono;
+  }
+}

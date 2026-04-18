@@ -24,11 +24,16 @@ namespace AdminBackend.Services
 
         public static List<Project> Projects { get; set; } = new List<Project>
         {
-            new Project { Id = 1, Title = "AI for Health", StudentName = "John Doe", ResearchAreaId = 1, SupervisorId = 1, IsRevealed = false },
-            new Project { Id = 2, Title = "Secure Network Protocol", StudentName = "Jane Roe", ResearchAreaId = 2, SupervisorId = 2, IsRevealed = true },
-            new Project { Id = 3, Title = "Cloud Scalability", StudentName = "Sam Smith", ResearchAreaId = 3, SupervisorId = 3, IsRevealed = false },
-            new Project { Id = 4, Title = "Privacy in ML", StudentName = "Emma Watson", ResearchAreaId = 1, SupervisorId = 4, IsRevealed = false },
-            new Project { Id = 5, Title = "Threat Detection", StudentName = "Bruce Wayne", ResearchAreaId = 2, SupervisorId = 5, IsRevealed = true }
+            new Project { Id = 1, Title = "AI for Health", StudentId = 1, ResearchAreaId = 1, SupervisorId = 1, IsRevealed = false },
+            new Project { Id = 2, Title = "Secure Network Protocol", StudentId = 2, ResearchAreaId = 2, SupervisorId = 2, IsRevealed = true },
+            new Project { Id = 3, Title = "Cloud Scalability", StudentId = 3, ResearchAreaId = 3, SupervisorId = 3, IsRevealed = false },
+            new Project { Id = 4, Title = "Privacy in ML", StudentId = 4, ResearchAreaId = 1, SupervisorId = 4, IsRevealed = false },
+            new Project { Id = 5, Title = "Threat Detection", StudentId = 5, ResearchAreaId = 2, SupervisorId = 5, IsRevealed = true }
+        };
+
+        public static List<AdminUser> AdminUsers { get; set; } = new List<AdminUser>
+        {
+            new AdminUser { Id = 1, Email = "admin@pas.com", Password = "123" }
         };
 
         public static void UpdateAllocation(int projectId, int supervisorId)

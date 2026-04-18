@@ -1,0 +1,81 @@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Analysis";
+    ViewData["ActivePage"] = "Analysis";
+
+    var projects = (List<AdminBackend.Models.Project>)ViewBag.Projects;
+    var areas = (List<AdminBackend.Models.ResearchArea>)ViewBag.ResearchAreas;
+    var supervisors = (List<AdminBackend.Models.Supervisor>)ViewBag.Supervisors;
+    var areaCounts = (IEnumerable<dynamic>)ViewBag.AreaCounts;
+    int maxCount = 1;
+    foreach (var ac in areaCounts) { if (ac.Count > maxCount) maxCount = ac.Count; }
+}
+
+<div class="page-header">
+    <h1 class="page-title">Analysis</h1>
+    <p class="page-subtitle">DATA // PROJECT DISTRIBUTION</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Projects</div>
+        <div class="stat-value stat-accent-blue">@projects.Count</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Revealed</div>
+        <div class="stat-value stat-accent-green">@projects.Count(p => p.IsRevealed)</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Hidden</div>
+        <div class="stat-value stat-accent-red">@projects.Count(p => !p.IsRevealed)</div>
+    </div>
+</div>
+
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <span class="table-title">Projects per Research Area</span>
+    </div>
+    <div style="padding: 1.25rem;">
+        <div class="bar-chart">
+            @foreach (var ac in areaCounts)
+            {
+                int pct = maxCount > 0 ? (int)((double)ac.Count / maxCount * 100) : 0;
+                <div class="bar-item">
+                    <span class="bar-label">@ac.Name</span>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width: @(pct)%;"></div>
+                    </div>
+                    <span class="bar-count">@ac.Count</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <span class="table-title">Supervisor Workload</span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Supervisor</th>
+                <th>Department</th>
+                <th>Assigned</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sup in supervisors)
+            {
+                var count = projects.Count(p => p.SupervisorId == sup.Id);
+                <tr>
+                    <td>@sup.Name</td>
+                    <td style="color: var(--text-muted);">@sup.Department</td>
+                    <td>
+                        <span style="color: var(--accent-yellow); font-family: var(--font-heading);">@count</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
