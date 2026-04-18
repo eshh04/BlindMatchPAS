@@ -1,0 +1,147 @@
+@model SupervisorDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1>Your Matches</h1>
+        <p class="text-muted">Track your project interests and confirmed matches</p>
+    </div>
+    <div class="col-auto">
+        <a asp-action="Projects" class="btn btn-primary">Browse Projects</a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Confirmed Matches -->
+@if (Model.ConfirmedMatches.Any())
+{
+    <div class="mb-5">
+        <h3 class="mb-3">✓ Confirmed Matches (@Model.ConfirmedMatches.Count)</h3>
+        <div class="row gap-3">
+            @foreach (var match in Model.ConfirmedMatches)
+            {
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">@match.Project?.Title</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small mb-3">@match.Project?.Abstract?.Substring(0, Math.Min(120, match.Project.Abstract.Length))...</p>
+                            <div class="row gx-2 mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Research Area</small>
+                                    <p class="mb-0">@match.Project?.ResearchArea?.Name</p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Matched</small>
+                                    <p class="mb-0">@match.ConfirmedAt?.ToString("MMM d")</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-success mb-3">Confirmed</span>
+                            <div class="d-grid">
+                                <a asp-controller="Match" asp-action="SupervisorReveal" asp-route-matchId="@match.Id" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye me-1"></i>View Student Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Interested Matches -->
+@if (Model.InterestedMatches.Any())
+{
+    <div class="mb-5">
+        <h3 class="mb-3">⊙ Interested (@Model.InterestedMatches.Count)</h3>
+        <div class="row gap-3">
+            @foreach (var match in Model.InterestedMatches)
+            {
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">@match.Project?.Title</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text small mb-3">@match.Project?.Abstract?.Substring(0, Math.Min(120, match.Project.Abstract.Length))...</p>
+                            <div class="row gx-2 mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Research Area</small>
+                                    <p class="mb-0">@match.Project?.ResearchArea?.Name</p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Expressed</small>
+                                    <p class="mb-0">@match.CreatedAt.ToString("MMM d")</p>
+                                </div>
+                            </div>
+                            <span class="badge bg-primary">Interested</span>
+                        </div>
+                        <div class="card-footer">
+                            <form method="post" asp-action="Confirm" asp-route-matchId="@match.Id" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-primary w-100" onclick="return confirm('Confirm this match? Other interested supervisors will be notified.')">
+                                    Confirm Match
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!-- Rejected Matches -->
+@if (Model.RejectedMatches.Any())
+{
+    <div class="mb-5">
+        <h3 class="mb-3">✗ Rejected (@Model.RejectedMatches.Count)</h3>
+        <div class="alert alert-secondary text-muted">
+            <p class="mb-0">These projects were matched to other supervisors before you confirmed your interest.</p>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Research Area</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var match in Model.RejectedMatches)
+                    {
+                        <tr>
+                            <td>
+                                <small>@match.Project?.Title?.Substring(0, Math.Min(40, match.Project.Title.Length))</small>
+                            </td>
+                            <td>@match.Project?.ResearchArea?.Name</td>
+                            <td><span class="badge bg-danger">Rejected</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@if (!Model.ConfirmedMatches.Any() && !Model.InterestedMatches.Any())
+{
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <p class="text-muted mb-3">You haven't expressed interest in any projects yet.</p>
+            <a asp-action="Projects" class="btn btn-primary">Start Browsing Projects</a>
+        </div>
+    </div>
+}
