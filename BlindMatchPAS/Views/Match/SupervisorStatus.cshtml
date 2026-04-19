@@ -1,0 +1,62 @@
+@model SupervisorMatchStatusViewModel
+@{
+    ViewData["Title"] = "Match Status";
+}
+
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <h2 class="mb-4">@Model.Match?.Project?.Title</h2>
+
+        <div class="card">
+            @if (Model.IsConfirmed)
+            {
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-check-circle me-2"></i>Match Confirmed</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">This match has been confirmed. Student identity has been revealed.</p>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <small class="text-muted">Student</small>
+                            <p class="mb-0 fw-bold">@Model.StudentName</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">Confirmed On</small>
+                            <p class="mb-0">@Model.Match?.ConfirmedAt?.ToString("MMM d, yyyy")</p>
+                        </div>
+                    </div>
+
+                    @if (Model.IsRevealed)
+                    {
+                        <a asp-action="SupervisorReveal" asp-route-matchId="@Model.Match!.Id" class="btn btn-primary w-100">
+                            <i class="bi bi-eye me-2"></i>View Student Details
+                        </a>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-hourglass-split me-2"></i>Interest Expressed</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">You have expressed interest in this project. You can confirm the match to proceed.</p>
+
+                    <form method="post" asp-controller="Supervisor" asp-action="Confirm" asp-route-matchId="@Model.Match!.Id">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-success w-100" onclick="return confirm('Confirm this match?')">
+                            <i class="bi bi-check-lg me-2"></i>Confirm Match
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+
+        <div class="mt-3">
+            <a asp-controller="Supervisor" asp-action="Dashboard" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
