@@ -8,6 +8,7 @@
 // ============================================================================
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using BlindMatchPAS.Data;
 using BlindMatchPAS.Models;
@@ -104,9 +105,21 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    // Apply pending EF Core migrations automatically
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.Migrate();
+    var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+
+    // Try applying migrations first. If legacy SQL Server migrations break on SQLite,
+    // recreate the dev database from the current model so the app can run locally.
+    try
+    {
+        dbContext.Database.Migrate();
+    }
+    catch (SqliteException ex) when (app.Environment.IsDevelopment())
+    {
+        logger.LogWarning(ex, "SQLite migration failed. Recreating development database from current model.");
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+    }
 
     // Seed the three application roles: Student, Supervisor, Admin
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
