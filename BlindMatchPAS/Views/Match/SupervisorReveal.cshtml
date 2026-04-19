@@ -35,9 +35,34 @@
                     <h5 class="text-muted small">Match Confirmed</h5>
                     <p class="mb-0">@Model.MatchedAt.ToString("MMMM d, yyyy")</p>
                 </div>
+
+                @if (Model.IsGroupProject)
+                {
+                    <div class="mb-4">
+                        <h5 class="text-muted small">Project Type</h5>
+                        <span class="badge bg-purple">Group Project</span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.GroupMemberEmails))
+                    {
+                        <div class="mb-4">
+                            <h5 class="text-muted small">Co-Collaborators</h5>
+                            <p class="mb-0 text-muted">
+                                @Model.GroupMemberEmails
+                            </p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="mb-4">
+                        <h5 class="text-muted small">Project Type</h5>
+                        <span class="badge bg-secondary">Individual Project</span>
+                    </div>
+                }
             </div>
             <div class="card-footer">
-                <a href="/Supervisor/Dashboard" class="btn btn-primary">Back to Dashboard</a>
+                <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
             </div>
         </div>
     </div>

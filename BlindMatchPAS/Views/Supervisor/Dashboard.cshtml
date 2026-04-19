@@ -46,7 +46,13 @@
                                     <p class="mb-0">@match.ConfirmedAt?.ToString("MMM d")</p>
                                 </div>
                             </div>
-                            <span class="badge bg-success mb-3">Confirmed</span>
+                            <div class="mb-3">
+                                <span class="badge bg-success">Confirmed</span>
+                                @if (match.Project?.IsGroupProject == true)
+                                {
+                                    <span class="badge bg-purple ms-1">Group Project</span>
+                                }
+                            </div>
                             <div class="d-grid">
                                 <a asp-controller="Match" asp-action="SupervisorReveal" asp-route-matchId="@match.Id" class="btn btn-sm btn-primary">
                                     <i class="bi bi-eye me-1"></i>View Student Details
@@ -85,7 +91,13 @@
                                     <p class="mb-0">@match.CreatedAt.ToString("MMM d")</p>
                                 </div>
                             </div>
-                            <span class="badge bg-primary">Interested</span>
+                            <div class="mb-2">
+                                <span class="badge bg-primary">Interested</span>
+                                @if (match.Project?.IsGroupProject == true)
+                                {
+                                    <span class="badge bg-purple ms-1">Group Project</span>
+                                }
+                            </div>
                         </div>
                         <div class="card-footer">
                             <form method="post" asp-action="Confirm" asp-route-matchId="@match.Id" style="display:inline;">

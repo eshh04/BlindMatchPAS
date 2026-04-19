@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // File: Models/ResearchArea.cs
 // Purpose: Entity model representing a research area classification used
 //          to categorise projects and supervisor preferences.
@@ -24,4 +24,6 @@ public class ResearchArea
     [Required(ErrorMessage = "Research Area name is required")]
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;
+
+    public string? Description { get; set; }
 }

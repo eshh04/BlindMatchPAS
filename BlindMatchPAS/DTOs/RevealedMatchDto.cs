@@ -29,4 +29,10 @@ public class RevealedMatchDto
 
     /// <summary>UTC timestamp when the match was confirmed.</summary>
     public DateTime MatchedAt { get; set; }
+
+    /// <summary>Whether this was a group project.</summary>
+    public bool IsGroupProject { get; set; }
+
+    /// <summary>Comma-separated list of co-collaborator emails.</summary>
+    public string? GroupMemberEmails { get; set; }
 }

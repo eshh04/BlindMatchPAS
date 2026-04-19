@@ -52,13 +52,48 @@
                         <small class="text-muted">Up to 500 characters</small>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group mb-4">
                         <label asp-for="ResearchAreaId" class="form-label">Research Area</label>
                         <select asp-for="ResearchAreaId" class="form-select" asp-items="(IEnumerable<SelectListItem>)ViewBag.ResearchAreas">
                             <option value="">-- Select Research Area --</option>
                         </select>
                         <span asp-validation-for="ResearchAreaId" class="invalid-feedback d-block"></span>
                     </div>
+
+                    @{
+                        var allowedTypes = ViewBag.SubmissionConfig?.AllowedProjectTypes ?? "Individual";
+                        bool forceIndividual = allowedTypes == "Individual";
+                        bool forceGroup = allowedTypes == "Group";
+                        bool showToggle = allowedTypes == "Both";
+                    }
+
+                    @if (!forceIndividual)
+                    {
+                        <hr />
+                        
+                        @if (showToggle)
+                        {
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" asp-for="IsGroupProject" id="isGroupProjectToggle">
+                                <label class="form-check-label fw-bold" asp-for="IsGroupProject">This is a Group Project</label>
+                            </div>
+                        }
+                        else if (forceGroup)
+                        {
+                            <!-- Force the value to true, hide the toggle -->
+                            <input type="hidden" name="IsGroupProject" value="true" id="isGroupProjectToggle" checked />
+                            <div class="alert alert-info py-2 small mb-3">
+                                <i class="bi bi-info-circle me-1"></i> Only group projects are allowed in this submission window.
+                            </div>
+                        }
+
+                        <div class="form-group" id="groupMembersSection" style="@(forceGroup ? "display: block;" : "display: none;")">
+                            <label asp-for="GroupMemberEmails" class="form-label">Co-Collaborator Emails <span class="text-danger">*</span></label>
+                            <input asp-for="GroupMemberEmails" type="text" class="form-control" placeholder="student2@blindmatch.com, student3@blindmatch.com" />
+                            <small class="text-muted">Enter valid email addresses separated by commas.</small>
+                            <span asp-validation-for="GroupMemberEmails" class="invalid-feedback d-block"></span>
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -70,6 +105,24 @@
     </div>
 </div>
 
-@section Scripts {
+@section PageScripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggle = document.getElementById('isGroupProjectToggle');
+            const section = document.getElementById('groupMembersSection');
+            
+            function updateVisibility() {
+                if (toggle.checked) {
+                    section.style.display = 'block';
+                    section.classList.add('fade-in');
+                } else {
+                    section.style.display = 'none';
+                }
+            }
+            
+            toggle.addEventListener('change', updateVisibility);
+            updateVisibility(); // Initial load
+        });
+    </script>
 }

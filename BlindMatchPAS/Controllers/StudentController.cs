@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using BlindMatchPAS.Models;
 using BlindMatchPAS.Services;
 using BlindMatchPAS.ViewModels;
+using BlindMatchPAS.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlindMatchPAS.Controllers;
 
@@ -26,17 +28,20 @@ public class StudentController : Controller
     private readonly IProjectService _projectService;
     private readonly IMatchingService _matchingService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ApplicationDbContext _context;
     private readonly ILogger<StudentController> _logger;
 
     public StudentController(
         IProjectService projectService,
         IMatchingService matchingService,
         UserManager<ApplicationUser> userManager,
+        ApplicationDbContext context,
         ILogger<StudentController> logger)
     {
         _projectService = projectService;
         _matchingService = matchingService;
         _userManager = userManager;
+        _context = context;
         _logger = logger;
     }
 
@@ -50,7 +55,7 @@ public class StudentController : Controller
         if (user == null)
             return Unauthorized();
 
-        var projects = await _projectService.GetStudentProjectsAsync(user.Id);
+        var projects = await _projectService.GetStudentProjectsAsync(user.Id, user.Email!);
         return View(projects);
     }
 
@@ -60,10 +65,14 @@ public class StudentController : Controller
     /// </summary>
     public async Task<IActionResult> Create()
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return Unauthorized();
+        var config = await _context.SubmissionConfigs.FirstOrDefaultAsync();
+        if (config == null || !config.IsActive || DateTime.UtcNow < config.StartDate)
+        {
+            TempData["ErrorMessage"] = "Project submissions are currently closed.";
+            return RedirectToAction("Dashboard");
+        }
 
+        ViewBag.SubmissionConfig = config;
         ViewBag.ResearchAreas = await _projectService.GetResearchAreaSelectListAsync();
         return View();
     }
@@ -87,6 +96,26 @@ public class StudentController : Controller
         if (user == null)
             return Unauthorized();
 
+        var config = await _context.SubmissionConfigs.FirstOrDefaultAsync();
+        if (config != null)
+        {
+            if (config.AllowedProjectTypes == "Individual" && model.IsGroupProject)
+            {
+                ModelState.AddModelError("IsGroupProject", "Group projects are not permitted in this submission window.");
+            }
+            else if (config.AllowedProjectTypes == "Group" && !model.IsGroupProject)
+            {
+                ModelState.AddModelError("IsGroupProject", "Only group projects are permitted in this submission window.");
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.SubmissionConfig = config;
+            ViewBag.ResearchAreas = await _projectService.GetResearchAreaSelectListAsync();
+            return View(model);
+        }
+
         try
         {
             var project = await _projectService.CreateProjectAsync(
@@ -94,7 +123,9 @@ public class StudentController : Controller
                 model.Abstract,
                 model.TechStack,
                 model.ResearchAreaId,
-                user.Id);
+                user.Id,
+                model.IsGroupProject,
+                model.GroupMemberEmails);
 
             _logger.LogInformation("Student {UserId} created project {ProjectId}", user.Id, project.Id);
             TempData["SuccessMessage"] = "Project submitted successfully!";
@@ -124,8 +155,11 @@ public class StudentController : Controller
         if (project == null)
             return NotFound();
 
-        // Security: Verify the logged-in student owns this project
-        if (project.StudentId != user.Id)
+        // Security: Verify the logged-in student owns this project or is a group member
+        bool isOwner = project.StudentId == user.Id;
+        bool isGroupMember = project.IsGroupProject && !string.IsNullOrEmpty(project.GroupMemberEmails) && project.GroupMemberEmails.Contains(user.Email!);
+
+        if (!isOwner && !isGroupMember)
             return Forbid();
 
         var model = new EditProjectViewModel
@@ -134,9 +168,13 @@ public class StudentController : Controller
             Title = project.Title,
             Abstract = project.Abstract,
             TechStack = project.TechStack,
-            ResearchAreaId = project.ResearchAreaId
+            ResearchAreaId = project.ResearchAreaId,
+            IsGroupProject = project.IsGroupProject,
+            GroupMemberEmails = project.GroupMemberEmails
         };
 
+        var config = await _context.SubmissionConfigs.FirstOrDefaultAsync();
+        ViewBag.SubmissionConfig = config;
         ViewBag.ResearchAreas = await _projectService.GetResearchAreaSelectListAsync();
         return View(model);
     }
@@ -157,8 +195,22 @@ public class StudentController : Controller
         if (id != model.Id)
             return BadRequest();
 
+        var config = await _context.SubmissionConfigs.FirstOrDefaultAsync();
+        if (config != null)
+        {
+            if (config.AllowedProjectTypes == "Individual" && model.IsGroupProject)
+            {
+                ModelState.AddModelError("IsGroupProject", "Group projects are not permitted in this submission window.");
+            }
+            else if (config.AllowedProjectTypes == "Group" && !model.IsGroupProject)
+            {
+                ModelState.AddModelError("IsGroupProject", "Only group projects are permitted in this submission window.");
+            }
+        }
+
         if (!ModelState.IsValid)
         {
+            ViewBag.SubmissionConfig = config;
             ViewBag.ResearchAreas = await _projectService.GetResearchAreaSelectListAsync();
             return View(model);
         }
@@ -169,7 +221,9 @@ public class StudentController : Controller
             model.Abstract,
             model.TechStack,
             model.ResearchAreaId,
-            user.Id);
+            user.Id,
+            model.IsGroupProject,
+            model.GroupMemberEmails);
 
         if (!success)
         {

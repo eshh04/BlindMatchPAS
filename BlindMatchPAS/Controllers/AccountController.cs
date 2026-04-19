@@ -42,15 +42,20 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
-        // Redirect already-authenticated users to their dashboard
-        if (User.Identity?.IsAuthenticated == true)
+        // Redirect already-authenticated users to their dashboard, UNLESS we're showing a security error
+        if (User.Identity?.IsAuthenticated == true && string.IsNullOrEmpty(returnUrl) && Request.Query["error"] != "access_denied")
         {
             if (User.IsInRole("Student"))
                 return RedirectToAction("Dashboard", "Student");
             if (User.IsInRole("Supervisor"))
                 return RedirectToAction("Dashboard", "Supervisor");
             if (User.IsInRole("Admin"))
-                return RedirectToAction("RunMatching", "Match");
+                return RedirectToAction("Dashboard", "Admin");
+        }
+
+        if (Request.Query["error"] == "access_denied")
+        {
+            ModelState.AddModelError(string.Empty, "Security Alert: You do not have permission to access that section. Please log in with an authorized account or contact the system administrator.");
         }
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -85,11 +90,13 @@ public class AccountController : Controller
                 }
 
                 // Role-based redirect after successful login
-                if (user.Role == "Admin")
-                    return RedirectToAction("RunMatching", "Match");
-                if (user.Role == "Student")
+                var roles = await _userManager.GetRolesAsync(user);
+                
+                if (user.Role == "Admin" || roles.Contains("Admin"))
+                    return RedirectToAction("Dashboard", "Admin");
+                if (user.Role == "Student" || roles.Contains("Student"))
                     return RedirectToAction("Dashboard", "Student");
-                if (user.Role == "Supervisor")
+                if (user.Role == "Supervisor" || roles.Contains("Supervisor"))
                     return RedirectToAction("Dashboard", "Supervisor");
 
                 return LocalRedirect(returnUrl ?? "/");
@@ -198,6 +205,6 @@ public class AccountController : Controller
     /// </summary>
     public IActionResult AccessDenied()
     {
-        return View();
+        return RedirectToAction("Login", new { error = "access_denied" });
     }
 }

@@ -1,0 +1,76 @@
+@model BlindMatchPAS.Models.SubmissionConfig
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Submission Timeline";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold gradient-text mb-1">SUBMISSION TIMELINE</h1>
+            <p class="text-muted">Configure project proposal submission windows</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="glass-card p-5">
+                <h4 class="fw-bold mb-4">Submission Form Configuration</h4>
+                <form asp-action="UpdateSubmissionSettings" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">WINDOW TITLE</label>
+                        <input asp-for="Title" class="form-control rounded-3 py-3" placeholder="e.g., Spring 2026 Submission" required />
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">STARTING DATE/TIME</label>
+                            <input asp-for="StartDate" type="datetime-local" class="form-control rounded-3 py-3" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">DEADLINE DATE/TIME</label>
+                            <input asp-for="EndDate" type="datetime-local" class="form-control rounded-3 py-3" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">ALLOWED PROJECT TYPES</label>
+                        <select asp-for="AllowedProjectTypes" class="form-select rounded-3 py-3">
+                            <option value="Individual">Individual Projects Only</option>
+                            <option value="Group">Group Projects Only</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-5 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" asp-for="IsActive" id="activeSwitch">
+                        <label class="form-check-label small fw-bold text-muted ms-2" for="activeSwitch">Enable Submissions Immediately</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-gradient w-100 py-3">SAVE TIMELINE CONFIGURATION</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="glass-card p-5 border-dashed bg-light/30">
+                <h5 class="fw-bold mb-4">Current System Logic</h5>
+                <ul class="space-y-4 ps-0 list-unstyled">
+                    <li class="d-flex gap-3 mb-3">
+                        <i class="bi bi-info-circle text-purple"></i>
+                        <span class="small text-muted">Before StartDate: Student submission form is hidden.</span>
+                    </li>
+                    <li class="d-flex gap-3 mb-3">
+                        <i class="bi bi-info-circle text-teal"></i>
+                        <span class="small text-muted">During Window: Active submissions permitted.</span>
+                    </li>
+                    <li class="d-flex gap-3 mb-3">
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        <span class="small text-muted">After EndDate: Submissions marked as **LATE** in Admin panel.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

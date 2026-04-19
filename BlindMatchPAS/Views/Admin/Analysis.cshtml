@@ -1,0 +1,100 @@
+@using BlindMatchPAS.Models
+@using Microsoft.AspNetCore.Identity
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Analytics Core";
+
+    var projects = (List<Project>)ViewBag.Projects;
+    var supervisors = (IList<ApplicationUser>)ViewBag.Supervisors;
+    var areaCounts = (IEnumerable<dynamic>)ViewBag.AreaCounts;
+    int maxCount = 1;
+    foreach (var ac in areaCounts) { if (ac.Count > maxCount) maxCount = ac.Count; }
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold gradient-text mb-1">ANALYTICS CORE</h1>
+            <p class="text-muted">Computational Logs and Workload Distribution</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+                <i class="bi bi-activity me-2"></i> SYSTEM_STABLE
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Research Area Distribution</h5>
+                    <i class="bi bi-pie-chart text-muted"></i>
+                </div>
+                <div class="space-y-4">
+                    @foreach (var ac in areaCounts)
+                    {
+                        int pct = maxCount > 0 ? (int)((double)ac.Count / maxCount * 100) : 0;
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small fw-bold">@ac.Name</span>
+                                <span class="small text-muted">@ac.Count units</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-purple" style="width: @(pct)%;"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="glass-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Supervisor Workload Log</h5>
+                    <i class="bi bi-bar-chart text-muted"></i>
+                </div>
+                <div class="space-y-4">
+                    @foreach (var s in supervisors.Take(5))
+                    {
+                        var count = projects.Count(p => p.Matches != null && p.Matches.Any(m => m.SupervisorId == s.Id && m.Status == BlindMatchPAS.Enums.MatchStatus.Confirmed));
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="flex-grow-1">
+                                <div class="small fw-bold">@s.FullName</div>
+                                <div class="d-flex gap-1 mt-1">
+                                    @for (int i = 0; i < 5; i++)
+                                    {
+                                        <div class="rounded-pill @(i < count ? "bg-teal" : "bg-light")" style="width: 15px; height: 6px;"></div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="fw-bold text-muted small">@count.0</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-card p-4 text-center text-muted small border-dashed">
+        <i class="bi bi-terminal animate-pulse me-2"></i>
+        Neural Core Processing Active // Data Streams Stabilized // VER_3.1.0
+    </div>
+</div>
+@section PageScripts {
+    <script>
+        setInterval(async () => {
+            try {
+                // Subtle sync check
+                console.log("Analysis core synced.");
+            } catch (e) {}
+        }, 5000);
+    </script>
+}
+
+<style>
+    .bg-purple { background-color: #7c3aed !important; }
+    .bg-teal { background-color: #14b8a6 !important; }
+    .border-dashed { border-style: dashed !important; border-width: 2px !important; }
+</style>

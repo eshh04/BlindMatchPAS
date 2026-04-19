@@ -1,0 +1,151 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "System Overview";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-4 fw-bold gradient-text mb-1">SYSTEM OVERVIEW</h1>
+            <p class="text-muted uppercase tracking-widest small">ADMIN PORTAL // REAL-TIME PLATFORM METRICS</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+                <i class="bi bi-shield-check me-2"></i> CORE_STABLE
+            </span>
+            <div class="mt-2 text-muted small font-monospace">SYS_@DateTime.Now.ToString("HH:mm:ss")</div>
+        </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="row g-4 mb-5">
+        <div class="col">
+            <div class="metric-card">
+                <div class="text-muted small mb-2">PROJECTS</div>
+                <div class="h2 fw-bold" id="metric-projects">@ViewBag.TotalProjects</div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="metric-card">
+                <div class="text-muted small mb-2">SUPERVISORS</div>
+                <div class="h2 fw-bold text-teal" id="metric-supervisors">@ViewBag.TotalSupervisors</div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="metric-card">
+                <div class="text-muted small mb-2">RESEARCH AREAS</div>
+                <div class="h2 fw-bold" id="metric-areas">@ViewBag.TotalResearchAreas</div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="metric-card">
+                <div class="text-muted small mb-2">REVEALED</div>
+                <div class="h2 fw-bold text-purple" id="metric-revealed">@ViewBag.RevealedCount</div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="metric-card">
+                <div class="text-muted small mb-2">PENDING MATCH</div>
+                <div class="h2 fw-bold text-warning" id="metric-pending">@ViewBag.PendingCount</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Graph -->
+    <div class="glass-card mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold mb-0">System Performance Graph</h4>
+            <div class="d-flex gap-3">
+                <span class="small text-muted"><i class="bi bi-circle-fill text-purple me-1"></i> Submissions</span>
+                <span class="small text-muted"><i class="bi bi-circle-fill text-teal me-1"></i> Matches</span>
+            </div>
+        </div>
+        <div style="height: 300px;">
+            <canvas id="performanceChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-12">
+            <div class="glass-card p-4 text-center text-muted small border-dashed">
+                <i class="bi bi-activity animate-pulse me-2"></i>
+                Neural Core Processing Active // Real-time Synchronization Active // VER_3.2.0
+            </div>
+        </div>
+    </div>
+</div>
+
+@section PageScripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        const performanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '10:10', '10:20', '10:30', '10:40', '10:50', '11:00', '11:10', '11:20', '11:30'],
+                datasets: [{
+                    label: 'Submissions',
+                    data: [12, 19, 3, 5, 2, 3, 20, 33, 45, @ViewBag.TotalProjects],
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Matches',
+                    data: [2, 5, 1, 8, 4, 10, 15, 20, 25, @ViewBag.RevealedCount],
+                    borderColor: '#14b8a6',
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Real-time Update Simulation
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/admin/metrics');
+                const data = await response.json();
+                
+                document.getElementById('metric-projects').innerText = data.totalProjects;
+                document.getElementById('metric-supervisors').innerText = data.totalSupervisors.length;
+                document.getElementById('metric-areas').innerText = data.totalResearchAreas;
+                document.getElementById('metric-revealed').innerText = data.revealedCount;
+                document.getElementById('metric-pending').innerText = data.pendingCount;
+
+                // Update chart
+                performanceChart.data.datasets[0].data.push(data.totalProjects);
+                performanceChart.data.datasets[0].data.shift();
+                performanceChart.data.datasets[1].data.push(data.revealedCount);
+                performanceChart.data.datasets[1].data.shift();
+                performanceChart.update();
+            } catch (error) {
+                console.error('Metrics sync failed:', error);
+            }
+        }, 5000);
+    </script>
+}
+
+<style>
+    .text-teal { color: #14b8a6 !important; }
+    .text-purple { color: #7c3aed !important; }
+    .bg-purple-subtle { background-color: #f3e8ff !important; }
+</style>

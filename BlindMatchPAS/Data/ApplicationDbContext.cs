@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // File: Data/ApplicationDbContext.cs
 // Purpose: EF Core database context for the BlindMatch application.
 //          Configures entity relationships, constraints, and seed data.
@@ -34,6 +34,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     /// <summary>Supervisor ranked research area preferences.</summary>
     public DbSet<SupervisorPreference> SupervisorPreferences { get; set; }
+
+    /// <summary>System configuration for project submission rounds.</summary>
+    public DbSet<SubmissionConfig> SubmissionConfigs { get; set; }
 
     /// <summary>
     /// Configures entity relationships and constraints using Fluent API.

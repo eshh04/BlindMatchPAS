@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BlindMatchPAS.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate20260417054655 : Migration
+    public partial class InitialSQLite : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,7 +60,8 @@ namespace BlindMatchPAS.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -186,7 +187,8 @@ namespace BlindMatchPAS.Migrations
                     ResearchAreaId = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false),
                     SubmittedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    IsRevealed = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -265,19 +267,19 @@ namespace BlindMatchPAS.Migrations
 
             migrationBuilder.InsertData(
                 table: "ResearchAreas",
-                columns: new[] { "Id", "Name" },
+                columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
-                    { 1, "Artificial Intelligence" },
-                    { 2, "Web Development" },
-                    { 3, "Cybersecurity" },
-                    { 4, "Machine Learning" },
-                    { 5, "Cloud Computing" },
-                    { 6, "Data Science" },
-                    { 7, "Internet of Things" },
-                    { 8, "Blockchain" },
-                    { 9, "Mobile Development" },
-                    { 10, "Natural Language Processing" }
+                    { 1, null, "Artificial Intelligence" },
+                    { 2, null, "Web Development" },
+                    { 3, null, "Cybersecurity" },
+                    { 4, null, "Machine Learning" },
+                    { 5, null, "Cloud Computing" },
+                    { 6, null, "Data Science" },
+                    { 7, null, "Internet of Things" },
+                    { 8, null, "Blockchain" },
+                    { 9, null, "Mobile Development" },
+                    { 10, null, "Natural Language Processing" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -14,6 +14,7 @@ using BlindMatchPAS.Data;
 using BlindMatchPAS.Models;
 using BlindMatchPAS.Services;
 using BlindMatchPAS.Middleware;
+using BlindMatchPAS.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,24 +136,37 @@ using (var scope = app.Services.CreateScope())
 
     // Seed default administrator account
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    const string adminEmail = "admin@blindmatch.ac.uk";
-
-    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    var admin = await userManager.FindByEmailAsync("admin@blindmatch.ac.uk");
+    if (admin == null)
     {
-        var admin = new ApplicationUser
+        admin = new ApplicationUser
         {
-            UserName = adminEmail,
-            Email = adminEmail,
+            UserName = "admin@blindmatch.ac.uk",
+            Email = "admin@blindmatch.ac.uk",
             FullName = "System Administrator",
             Role = "Admin",
             EmailConfirmed = true
         };
+        await userManager.CreateAsync(admin, "Admin@2026!");
+        await userManager.AddToRoleAsync(admin, "Admin");
+    }
+    else if (!await userManager.IsInRoleAsync(admin, "Admin"))
+    {
+        await userManager.AddToRoleAsync(admin, "Admin");
+    }
 
-        var result = await userManager.CreateAsync(admin, "Admin@2026!");
-        if (result.Succeeded)
+    // --- DATA REPAIR: Ensure all confirmed matches are revealed ---
+    var confirmedMatches = await dbContext.Matches
+        .Where(m => m.Status == MatchStatus.Confirmed && !m.IsRevealed)
+        .ToListAsync();
+    
+    if (confirmedMatches.Any())
+    {
+        foreach (var m in confirmedMatches)
         {
-            await userManager.AddToRoleAsync(admin, "Admin");
+            m.IsRevealed = true;
         }
+        await dbContext.SaveChangesAsync();
     }
 }
 
