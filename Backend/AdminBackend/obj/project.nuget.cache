@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "9Cf2gFn5QsM=",
+  "dgSpecHash": "gFzjQNFZ+A8=",
   "success": true,
   "projectFilePath": "C:\\Users\\user\\Downloads\\zip\\Backend\\AdminBackend\\AdminBackend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\10.0.6\\microsoft.aspnetcore.identity.entityframeworkcore.10.0.6.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.5\\microsoft.aspnetcore.openapi.10.0.5.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.build.framework\\18.0.2\\microsoft.build.framework.18.0.2.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.11.0\\microsoft.codeanalysis.analyzers.3.11.0.nupkg.sha512",

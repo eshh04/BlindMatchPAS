@@ -1,4 +1,5 @@
 using AdminBackend.Models;
+using AdminBackend.Enums;
 
 namespace AdminBackend.Services
 {
@@ -7,8 +8,8 @@ namespace AdminBackend.Services
         public static List<ResearchArea> ResearchAreas { get; set; } = new List<ResearchArea>
         {
             new ResearchArea { Id = 1, Name = "Artificial Intelligence", Description = "AI and Machine Learning" },
-            new ResearchArea { Id = 2, Name = "Cybersecurity", Description = "Network security and cryptography" },
-            new ResearchArea { Id = 3, Name = "Web Development", Description = "Modern web technologies" },
+            new ResearchArea { Id = 2, Name = "Web Development", Description = "Modern web technologies" },
+            new ResearchArea { Id = 3, Name = "Cybersecurity", Description = "Network security and cryptography" },
             new ResearchArea { Id = 4, Name = "Data Science", Description = "Big data and analytics" },
             new ResearchArea { Id = 5, Name = "Blockchain", Description = "Decentralized ledger technology" }
         };
@@ -24,11 +25,9 @@ namespace AdminBackend.Services
 
         public static List<Project> Projects { get; set; } = new List<Project>
         {
-            new Project { Id = 1, Title = "AI for Health", StudentId = 1, ResearchAreaId = 1, SupervisorId = 1, IsRevealed = false },
-            new Project { Id = 2, Title = "Secure Network Protocol", StudentId = 2, ResearchAreaId = 2, SupervisorId = 2, IsRevealed = true },
-            new Project { Id = 3, Title = "Cloud Scalability", StudentId = 3, ResearchAreaId = 3, SupervisorId = 3, IsRevealed = false },
-            new Project { Id = 4, Title = "Privacy in ML", StudentId = 4, ResearchAreaId = 1, SupervisorId = 4, IsRevealed = false },
-            new Project { Id = 5, Title = "Threat Detection", StudentId = 5, ResearchAreaId = 2, SupervisorId = 5, IsRevealed = true }
+            new Project { Id = 1, Title = "AI-Powered Code Review System", StudentId = "stu-1", ResearchAreaId = 1, SupervisorId = 1, IsRevealed = false, Abstract = "Developing an AI system to assist in code reviews", Status = ProjectStatus.Pending },
+            new Project { Id = 2, Title = "Blockchain Security Analysis", StudentId = "stu-2", ResearchAreaId = 3, SupervisorId = 2, IsRevealed = true, Abstract = "Analyzing security vulnerabilities in blockchain implementations", Status = ProjectStatus.Matched },
+            new Project { Id = 3, Title = "React Performance Optimization", StudentId = "stu-3", ResearchAreaId = 2, SupervisorId = 3, IsRevealed = false, Abstract = "Optimizing React applications for better performance", Status = ProjectStatus.UnderReview }
         };
 
         public static List<AdminUser> AdminUsers { get; set; } = new List<AdminUser>
@@ -42,7 +41,6 @@ namespace AdminBackend.Services
             if (project != null)
             {
                 project.SupervisorId = supervisorId;
-                // Optionally update the navigation property if we want to be thorough in memory
                 project.Supervisor = Supervisors.FirstOrDefault(s => s.Id == supervisorId);
             }
         }

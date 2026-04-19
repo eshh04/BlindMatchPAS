@@ -64,7 +64,7 @@ namespace AdminBackend.Controllers
             if (student != null)
             {
                 // Unlink projects
-                var projects = await _context.Projects.Where(p => p.StudentId == id).ToListAsync();
+                var projects = await _context.Projects.Where(p => p.StudentId == id.ToString()).ToListAsync();
                 foreach (var p in projects)
                 {
                     _context.Projects.Remove(p); // If student is gone, project is usually gone in this PAS

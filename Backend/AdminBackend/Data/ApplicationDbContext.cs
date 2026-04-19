@@ -1,65 +1,87 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AdminBackend.Models;
+using AdminBackend.Enums;
 
-namespace AdminBackend.Data
+namespace AdminBackend.Data;
+
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    public class ApplicationDbContext : DbContext
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+    }
 
-        public DbSet<AdminUser> AdminUsers { get; set; }
-        public DbSet<ResearchArea> ResearchAreas { get; set; }
-        public DbSet<Supervisor> Supervisors { get; set; }
-        public DbSet<Student> Students { get; set; }
-        public DbSet<Project> Projects { get; set; }
+    public DbSet<ResearchArea> ResearchAreas { get; set; }
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Match> Matches { get; set; }
+    public DbSet<SupervisorPreference> SupervisorPreferences { get; set; }
+    public DbSet<Student> Students { get; set; } // Kept for legacy compatibility if needed
+    public DbSet<Supervisor> Supervisors { get; set; } // Kept for legacy compatibility if needed
+    public DbSet<AdminUser> AdminUsers { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
-            // Seed AdminUser table
-            modelBuilder.Entity<AdminUser>().HasData(
-                new AdminUser { Id = 1, Email = "admin@pas.com", Password = "123" }
-            );
+        // Project -> Student (Many-to-One)
+        modelBuilder.Entity<Project>()
+            .HasOne(p => p.Student)
+            .WithMany(u => u.StudentProjects)
+            .HasForeignKey(p => p.StudentId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Seed Student table
-            modelBuilder.Entity<Student>().HasData(
-                new Student { Id = 1, Name = "John Doe", Email = "john@student.com", Password = "123", Department = "CS" },
-                new Student { Id = 2, Name = "Jane Roe", Email = "jane@student.com", Password = "123", Department = "IS" },
-                new Student { Id = 3, Name = "Sam Smith", Email = "sam@student.com", Password = "123", Department = "SE" },
-                new Student { Id = 4, Name = "Emma Watson", Email = "emma@student.com", Password = "123", Department = "CS" },
-                new Student { Id = 5, Name = "Bruce Wayne", Email = "bruce@student.com", Password = "123", Department = "IS" }
-            );
+        // Project -> ResearchArea
+        modelBuilder.Entity<Project>()
+            .HasOne(p => p.ResearchArea)
+            .WithMany(r => r.Projects)
+            .HasForeignKey(p => p.ResearchAreaId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Seed ResearchArea table
-            modelBuilder.Entity<ResearchArea>().HasData(
-                new ResearchArea { Id = 1, Name = "Artificial Intelligence", Description = "AI and Machine Learning research" },
-                new ResearchArea { Id = 2, Name = "Cybersecurity", Description = "Network security and cryptography" },
-                new ResearchArea { Id = 3, Name = "Web Development", Description = "Modern web technologies and frameworks" },
-                new ResearchArea { Id = 4, Name = "Data Science", Description = "Big data and analytics" },
-                new ResearchArea { Id = 5, Name = "Blockchain", Description = "Decentralized ledger technology" }
-            );
+        // Project -> Matches
+        modelBuilder.Entity<Project>()
+            .HasMany(p => p.Matches)
+            .WithOne(m => m.Project)
+            .HasForeignKey(m => m.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-            // Seed Supervisor table
-            modelBuilder.Entity<Supervisor>().HasData(
-                new Supervisor { Id = 1, Name = "Dr. Alice Smith", Email = "alice@supervisor.com", Password = "123", Department = "Computer Science" },
-                new Supervisor { Id = 2, Name = "Prof. Bob Jones", Email = "bob@supervisor.com", Password = "123", Department = "Information Technology" },
-                new Supervisor { Id = 3, Name = "Dr. Charlie Brown", Email = "charlie@supervisor.com", Password = "123", Department = "Software Engineering" },
-                new Supervisor { Id = 4, Name = "Dr. Diana Prince", Email = "diana@supervisor.com", Password = "123", Department = "Cyber Studies" },
-                new Supervisor { Id = 5, Name = "Prof. Edward Norton", Email = "edward@supervisor.com", Password = "123", Department = "Artificial Intelligence" }
-            );
+        // Match -> Supervisor
+        modelBuilder.Entity<Match>()
+            .HasOne(m => m.Supervisor)
+            .WithMany(u => u.SupervisorMatches)
+            .HasForeignKey(m => m.SupervisorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            // Seed Project table
-            modelBuilder.Entity<Project>().HasData(
-                new Project { Id = 1, Title = "AI for Health", Abstract = "Developing an AI system to assist in code reviews", StudentId = 1, ResearchAreaId = 1, SupervisorId = 1, IsRevealed = false },
-                new Project { Id = 2, Title = "Secure Network Protocol", Abstract = "Analyzing security vulnerabilities in blockchain implementations", StudentId = 2, ResearchAreaId = 2, SupervisorId = 2, IsRevealed = true },
-                new Project { Id = 3, Title = "Cloud Scalability", Abstract = "Optimizing React applications for better performance", StudentId = 3, ResearchAreaId = 3, SupervisorId = 3, IsRevealed = false },
-                new Project { Id = 4, Title = "Privacy in ML", Abstract = "Researching privacy preserving ML techniques", StudentId = 4, ResearchAreaId = 1, SupervisorId = 4, IsRevealed = false },
-                new Project { Id = 5, Title = "Threat Detection", Abstract = "Network threat detection using heuristics", StudentId = 5, ResearchAreaId = 2, SupervisorId = 5, IsRevealed = true }
-            );
-        }
+        // SupervisorPreference -> Supervisor
+        modelBuilder.Entity<SupervisorPreference>()
+            .HasOne(sp => sp.Supervisor)
+            .WithMany(u => u.ResearchAreaPreferences)
+            .HasForeignKey(sp => sp.SupervisorId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // SupervisorPreference -> ResearchArea
+        modelBuilder.Entity<SupervisorPreference>()
+            .HasOne(sp => sp.ResearchArea)
+            .WithMany()
+            .HasForeignKey(sp => sp.ResearchAreaId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<SupervisorPreference>()
+            .HasIndex(sp => new { sp.SupervisorId, sp.ResearchAreaId })
+            .IsUnique();
+
+        // Seed Data: Research Areas (Full 10 from main)
+        modelBuilder.Entity<ResearchArea>().HasData(
+            new ResearchArea { Id = 1, Name = "Artificial Intelligence", Description = "AI and Machine Learning research" },
+            new ResearchArea { Id = 2, Name = "Web Development", Description = "Modern web technologies and frameworks" },
+            new ResearchArea { Id = 3, Name = "Cybersecurity", Description = "Network security and cryptography" },
+            new ResearchArea { Id = 4, Name = "Machine Learning", Description = "Statistical models and algorithms" },
+            new ResearchArea { Id = 5, Name = "Cloud Computing", Description = "Distributed systems and cloud infrastructure" },
+            new ResearchArea { Id = 6, Name = "Data Science", Description = "Big data analytics and visualization" },
+            new ResearchArea { Id = 7, Name = "Internet of Things", Description = "Connected devices and smart systems" },
+            new ResearchArea { Id = 8, Name = "Blockchain", Description = "Decentralized ledger technologies" },
+            new ResearchArea { Id = 9, Name = "Mobile Development", Description = "iOS and Android app development" },
+            new ResearchArea { Id = 10, Name = "Natural Language Processing", Description = "Text and speech processing" }
+        );
     }
 }
