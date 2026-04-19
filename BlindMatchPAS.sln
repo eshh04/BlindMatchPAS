@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11709.299 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlindMatchPAS", "BlindMatchPAS\BlindMatchPAS.csproj", "{6FDD1332-58DC-4F35-9552-A51EB6A41533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlindMatchPAS.Tests", "BlindMatchPAS.Tests\BlindMatchPAS.Tests.csproj", "{6A422949-EA67-466C-9793-9CE6B7366FAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6FDD1332-58DC-4F35-9552-A51EB6A41533}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FDD1332-58DC-4F35-9552-A51EB6A41533}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FDD1332-58DC-4F35-9552-A51EB6A41533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A422949-EA67-466C-9793-9CE6B7366FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A422949-EA67-466C-9793-9CE6B7366FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A422949-EA67-466C-9793-9CE6B7366FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A422949-EA67-466C-9793-9CE6B7366FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
