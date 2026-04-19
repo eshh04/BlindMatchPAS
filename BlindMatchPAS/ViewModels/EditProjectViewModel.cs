@@ -44,4 +44,12 @@ public class EditProjectViewModel
     [Required(ErrorMessage = "Please select a research area")]
     [Display(Name = "Research Area")]
     public int ResearchAreaId { get; set; }
+
+    [Display(Name = "Is this a Group Project?")]
+    public bool IsGroupProject { get; set; } = false;
+
+    [Display(Name = "Group Member Emails (Comma Separated)")]
+    [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:,\s*[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})*$", 
+        ErrorMessage = "Please provide valid email addresses separated by commas")]
+    public string? GroupMemberEmails { get; set; }
 }

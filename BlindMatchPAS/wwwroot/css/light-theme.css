@@ -46,6 +46,7 @@ button {
 .btn-secondary,
 .btn-outline {
   background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   color: var(--color-purple);
   border: 2px solid rgba(124, 58, 237, 0.3);
@@ -157,6 +158,7 @@ button {
   font-family: inherit;
   font-size: inherit;
   background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(124, 58, 237, 0.2);
   border-radius: var(--radius-lg);
@@ -288,6 +290,7 @@ textarea.form-control {
 .card,
 .card-modern {
   background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-xl);
@@ -403,6 +406,7 @@ textarea.form-control {
   gap: var(--spacing-lg);
   align-items: flex-start;
   background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   animation: slideInDown 300ms ease-out;
 }
@@ -506,11 +510,13 @@ textarea.form-control {
 
 .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(3px);
   backdrop-filter: blur(3px);
 }
 
 .modal-content {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-xl);
@@ -557,6 +563,7 @@ textarea.form-control {
 
 .navbar {
   background: rgba(255, 255, 255, 0.8) !important;
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(124, 58, 237, 0.1);
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
@@ -613,6 +620,7 @@ textarea.form-control {
 
 .dropdown-menu {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(124, 58, 237, 0.2);
   border-radius: var(--radius-lg);
@@ -651,6 +659,7 @@ textarea.form-control {
 
 .page-link {
   background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(124, 58, 237, 0.2);
   color: var(--color-purple);
@@ -761,3 +770,4 @@ textarea.form-control {
     border-radius: var(--radius-lg);
   }
 }
+

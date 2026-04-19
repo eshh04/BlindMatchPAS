@@ -17,16 +17,16 @@ namespace BlindMatchPAS.Services;
 public interface IProjectService
 {
     /// <summary>Create a new project with Pending status.</summary>
-    Task<Project> CreateProjectAsync(string title, string abstract_, string techStack, int researchAreaId, string studentId);
+    Task<Project> CreateProjectAsync(string title, string abstract_, string techStack, int researchAreaId, string studentId, bool isGroupProject = false, string? groupMemberEmails = null);
 
     /// <summary>Update an existing project. Returns (success, errorMessage).</summary>
-    Task<(bool Success, string Error)> EditProjectAsync(int projectId, string title, string abstract_, string techStack, int researchAreaId, string studentId);
+    Task<(bool Success, string Error)> EditProjectAsync(int projectId, string title, string abstract_, string techStack, int researchAreaId, string studentId, bool isGroupProject = false, string? groupMemberEmails = null);
 
     /// <summary>Withdraw a project. Cannot withdraw if already Matched. Returns (success, errorMessage).</summary>
     Task<(bool Success, string Error)> WithdrawProjectAsync(int projectId, string studentId);
 
     /// <summary>Get all projects for a student, ordered by SubmittedAt descending.</summary>
-    Task<List<Project>> GetStudentProjectsAsync(string studentId);
+    Task<List<Project>> GetStudentProjectsAsync(string studentId, string studentEmail);
 
     /// <summary>Get a single project by ID with related data.</summary>
     Task<Project?> GetProjectByIdAsync(int projectId);

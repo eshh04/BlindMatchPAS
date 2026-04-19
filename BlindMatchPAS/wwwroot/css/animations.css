@@ -141,10 +141,12 @@
 
 @keyframes glassBlurIn {
   from {
+    -webkit-backdrop-filter: blur(0px);
     backdrop-filter: blur(0px);
     opacity: 0;
   }
   to {
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     opacity: 1;
   }
@@ -153,11 +155,13 @@
 @keyframes glassAppear {
   from {
     background: rgba(255, 255, 255, 0);
+    -webkit-backdrop-filter: blur(0px);
     backdrop-filter: blur(0px);
     border-color: rgba(255, 255, 255, 0);
   }
   to {
     background: rgba(255, 255, 255, 0.7);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-color: rgba(255, 255, 255, 0.2);
   }
@@ -358,9 +362,7 @@ body {
   animation: fadeIn 300ms ease-in-out;
 }
 
-main {
-  animation: fadeIn 400ms ease-in-out;
-}
+/* Animation handled by page-ready class in site.js */
 
 /* ─────────────────────────────────────────────────────────────────────────
    CONTENT SECTION STAGGER

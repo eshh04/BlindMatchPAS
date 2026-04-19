@@ -55,6 +55,15 @@ else
                             <small class="text-muted">Research Area</small>
                             <p class="mb-2">@project.ResearchArea?.Name</p>
                         </div>
+                        
+                        @if (project.IsGroupProject)
+                        {
+                            <div class="mb-3">
+                                <span class="badge bg-purple-subtle text-purple border border-purple">
+                                    <i class="bi bi-people-fill me-1"></i> Group Project
+                                </span>
+                            </div>
+                        }
 
                         <div class="d-flex gap-2 mb-3 flex-wrap">
                             @switch (project.Status)

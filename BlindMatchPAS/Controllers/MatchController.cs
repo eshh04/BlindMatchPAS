@@ -75,31 +75,47 @@ public class MatchController : Controller
     /// Reveals the matched supervisor's identity to the student.
     /// Only accessible after the project has been matched and confirmed.
     /// </summary>
-    [Authorize(Policy = "StudentOnly")]
+    [HttpGet]
+    [Route("Match/Reveal/{projectId}")]
+    [Authorize] // Allow all authenticated users (logic inside restricts by role/ownership)
     public async Task<IActionResult> Reveal(int projectId)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return Unauthorized();
+        if (user == null) return Challenge();
+
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+        var isSupervisor = await _userManager.IsInRoleAsync(user, "Supervisor");
 
         var project = await _context.Projects
             .Include(p => p.Student)
+            .Include(p => p.Matches)
+                .ThenInclude(m => m.Supervisor)
             .FirstOrDefaultAsync(p => p.Id == projectId);
 
-        if (project == null)
-            return NotFound();
+        if (project == null || project.Status != ProjectStatus.Matched)
+            return RedirectToAction("AccessDenied", "Account", new { error = "not_found_or_unauthorized" });
 
-        // Security: Verify the logged-in student owns this project
-        if (project.StudentId != user.Id)
-            return Forbid();
+        var confirmedMatch = project.Matches?.FirstOrDefault(m => m.Status == MatchStatus.Confirmed && m.IsRevealed);
+        
+        if (confirmedMatch == null || confirmedMatch.Supervisor == null)
+            return RedirectToAction("AccessDenied", "Account", new { error = "not_found_or_unauthorized" });
 
-        // Project must be in Matched status to reveal
-        if (project.Status != ProjectStatus.Matched)
-            return BadRequest("Project is not matched yet");
+        // Authorization Check
+        if (!isAdmin && project.StudentId != user.Id && confirmedMatch.SupervisorId != user.Id)
+        {
+            return RedirectToAction("AccessDenied", "Account", new { error = "not_found_or_unauthorized" });
+        }
 
-        var revealedMatch = await _matchingService.GetRevealedMatchForStudentAsync(projectId, user.Id);
-        if (revealedMatch == null)
-            return NotFound();
+        var revealedMatch = new BlindMatchPAS.DTOs.RevealedMatchDto
+        {
+            MatchId = confirmedMatch.Id,
+            PersonFullName = confirmedMatch.Supervisor.FullName,
+            PersonEmail = confirmedMatch.Supervisor.Email!,
+            ExtraInfo = $"Research Area", // Simplified since ResearchArea might not be included
+            MatchedAt = confirmedMatch.ConfirmedAt ?? confirmedMatch.CreatedAt,
+            IsGroupProject = project.IsGroupProject,
+            GroupMemberEmails = project.GroupMemberEmails
+        };
 
         return View(revealedMatch);
     }
@@ -109,16 +125,47 @@ public class MatchController : Controller
     /// Reveals the matched student's identity to the supervisor.
     /// Only accessible after match confirmation.
     /// </summary>
-    [Authorize(Policy = "SupervisorOnly")]
-    public async Task<IActionResult> SupervisorReveal(int matchId)
+    [HttpGet]
+    [Route("Match/SupervisorReveal/{matchId?}")]
+    [Authorize] // Allow all authenticated users (logic inside restricts by role/ownership)
+    public async Task<IActionResult> SupervisorReveal(int? matchId)
     {
-        var user = await _userManager.GetUserAsync(User);
-        if (user == null)
-            return Unauthorized();
+        // Support both route parameter and query string
+        int actualMatchId = matchId ?? (int.TryParse(Request.Query["matchId"], out var qId) ? qId : 0);
 
-        var revealedMatch = await _matchingService.GetRevealedMatchForSupervisorAsync(matchId, user.Id);
-        if (revealedMatch == null)
-            return NotFound();
+        if (actualMatchId == 0) return RedirectToAction("AccessDenied", "Account", new { error = "invalid_id" });
+
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return Challenge();
+
+        var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+        var isStudent = await _userManager.IsInRoleAsync(user, "Student");
+
+        // Use custom query for Admin/Student bypass since the matching service restricts to Supervisor owner
+        var match = await _context.Matches
+            .Include(m => m.Project)
+                .ThenInclude(p => p!.Student)
+            .FirstOrDefaultAsync(m => m.Id == actualMatchId);
+
+        if (match == null || match.Status != MatchStatus.Confirmed || !match.IsRevealed || match.Project?.Student == null)
+            return RedirectToAction("AccessDenied", "Account", new { error = "not_found_or_unauthorized" });
+
+        // Authorization Check
+        if (!isAdmin && match.SupervisorId != user.Id && match.Project.StudentId != user.Id)
+        {
+            return RedirectToAction("AccessDenied", "Account", new { error = "not_found_or_unauthorized" });
+        }
+
+        var revealedMatch = new BlindMatchPAS.DTOs.RevealedMatchDto
+        {
+            MatchId = match.Id,
+            PersonFullName = match.Project.Student.FullName,
+            PersonEmail = match.Project.Student.Email!,
+            ExtraInfo = $"Project: {match.Project.Title}",
+            MatchedAt = match.ConfirmedAt ?? match.CreatedAt,
+            IsGroupProject = match.Project.IsGroupProject,
+            GroupMemberEmails = match.Project.GroupMemberEmails
+        };
 
         return View(revealedMatch);
     }

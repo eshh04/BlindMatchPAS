@@ -1,0 +1,116 @@
+@model BlindMatchPAS.Models.Project
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Project Details";
+    var match = Model.Matches?.FirstOrDefault(m => m.Status == BlindMatchPAS.Enums.MatchStatus.Confirmed);
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <a asp-action="AllProjects" class="btn btn-outline-secondary rounded-pill btn-sm">
+            <i class="bi bi-arrow-left me-2"></i> Back to Registry
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <span class="badge bg-purple-subtle text-purple border border-purple mb-2">PRJ-@Model.Id.ToString("D4")</span>
+                        <h2 class="fw-bold mb-1">@Model.Title</h2>
+                        <div class="text-muted small">
+                            <i class="bi bi-clock me-1"></i> Submitted: @Model.SubmittedAt.ToString("MMM d, yyyy") 
+                            <span class="mx-2">|</span>
+                            <i class="bi bi-tag me-1"></i> Area: @Model.ResearchArea?.Name
+                        </div>
+                    </div>
+                    <span class="badge @(Model.Status == BlindMatchPAS.Enums.ProjectStatus.Approved ? "bg-success" : "bg-primary") px-3 py-2 rounded-pill">
+                        @Model.Status
+                    </span>
+                </div>
+
+                <h5 class="fw-bold mt-4 mb-3">Abstract</h5>
+                <p class="text-muted" style="line-height: 1.8;">
+                    @Model.Abstract
+                </p>
+
+                <h5 class="fw-bold mt-4 mb-3">Tech Stack</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var tech in (Model.TechStack ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">@tech.Trim()</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Student Details -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-mortarboard text-purple me-2"></i> Student Details</h5>
+                @if (Model.Student != null)
+                {
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar bg-purple-subtle text-purple fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            @(Model.Student.FullName?.FirstOrDefault().ToString() ?? "U")
+                        </div>
+                        <div>
+                            <div class="fw-bold">@Model.Student.FullName (Lead)</div>
+                            <div class="text-muted small">@Model.Student.Email</div>
+                        </div>
+                    </div>
+
+                    @if (Model.IsGroupProject && !string.IsNullOrWhiteSpace(Model.GroupMemberEmails))
+                    {
+                        <h6 class="fw-bold mt-4 mb-2 small text-muted">Co-Collaborators</h6>
+                        <ul class="list-unstyled">
+                            @foreach(var email in Model.GroupMemberEmails.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <li class="small mb-1"><i class="bi bi-person me-2 text-secondary"></i>@email.Trim()</li>
+                            }
+                        </ul>
+                    }
+
+                    <a href="mailto:@Model.Student.Email" class="btn btn-outline-primary btn-sm w-100 rounded-pill mt-3">
+                        <i class="bi bi-envelope me-1"></i> Contact Lead Student
+                    </a>
+                }
+                else
+                {
+                    <div class="text-muted italic small">No student associated.</div>
+                }
+            </div>
+
+            <!-- Supervisor Match -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold mb-3 border-bottom pb-2"><i class="bi bi-person-badge text-teal me-2"></i> Supervisor Match</h5>
+                @if (match?.Supervisor != null)
+                {
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar bg-teal-subtle text-teal fw-bold rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.2rem;">
+                            @(match.Supervisor.FullName?.FirstOrDefault().ToString() ?? "S")
+                        </div>
+                        <div>
+                            <div class="fw-bold">@match.Supervisor.FullName</div>
+                            <div class="text-muted small">@match.Supervisor.Email</div>
+                        </div>
+                    </div>
+                    <div class="text-success small mb-3"><i class="bi bi-check-circle-fill me-1"></i> Match Confirmed on @match.ConfirmedAt?.ToString("MMM d")</div>
+                    
+                    <a href="mailto:@match.Supervisor.Email" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                        <i class="bi bi-envelope me-1"></i> Contact Supervisor
+                    </a>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-person-x display-4 text-muted mb-2"></i>
+                        <p class="text-muted small mb-0">No confirmed supervisor match yet.</p>
+                        <a asp-action="AllocationOverview" class="btn btn-sm btn-outline-primary mt-3 rounded-pill">Manage Allocations</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

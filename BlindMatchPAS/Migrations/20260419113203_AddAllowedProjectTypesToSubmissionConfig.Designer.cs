@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlindMatchPAS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260417054655_InitialCreate")]
-    partial class InitialCreate20260417054655
+    [Migration("20260419113203_AddAllowedProjectTypesToSubmissionConfig")]
+    partial class AddAllowedProjectTypesToSubmissionConfig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -138,6 +138,18 @@ namespace BlindMatchPAS.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("GroupMemberEmails")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsGroupProject")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsLate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsRevealed")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("ResearchAreaId")
                         .HasColumnType("INTEGER");
 
@@ -178,6 +190,9 @@ namespace BlindMatchPAS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -239,6 +254,34 @@ namespace BlindMatchPAS.Migrations
                             Id = 10,
                             Name = "Natural Language Processing"
                         });
+                });
+
+            modelBuilder.Entity("BlindMatchPAS.Models.SubmissionConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AllowedProjectTypes")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubmissionConfigs");
                 });
 
             modelBuilder.Entity("BlindMatchPAS.Models.SupervisorPreference", b =>

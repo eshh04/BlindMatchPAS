@@ -57,6 +57,12 @@ else
                 <div class="card h-100">
                     <div class="card-header">
                         <h5 class="mb-0">@project.Title.Substring(0, Math.Min(35, project.Title.Length))@(project.Title.Length > 35 ? "..." : "")</h5>
+                        @if (project.IsGroupProject)
+                        {
+                            <span class="badge bg-purple-subtle text-purple border border-purple mt-2" style="font-size: 0.7rem;">
+                                <i class="bi bi-people-fill me-1"></i> Group Project
+                            </span>
+                        }
                     </div>
                     <div class="card-body">
                         <p class="card-text small">@project.Abstract.Substring(0, Math.Min(120, project.Abstract.Length))...</p>

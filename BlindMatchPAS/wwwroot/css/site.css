@@ -81,6 +81,7 @@ main {
 
 .bg-navbar {
     background: rgba(26, 31, 46, 0.95) !important;
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
 }
 

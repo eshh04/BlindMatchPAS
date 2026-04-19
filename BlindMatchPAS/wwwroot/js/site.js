@@ -1,4 +1,4 @@
-﻿// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════════
 // BLINDMATCH CLIENT UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -85,6 +85,65 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.stopPropagation();
             }
             this.classList.add('was-validated');
+        });
+    });
+
+    // --- PREMIUM PAGE TRANSITIONS ---
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+        // Subtle initial offset for entrance
+        mainContent.style.transform = 'translateY(10px)';
+        mainContent.style.opacity = '0';
+        
+        requestAnimationFrame(() => {
+            mainContent.classList.add('page-ready');
+            // Remove inline overrides to allow CSS class to take over
+            mainContent.style.opacity = '';
+            mainContent.style.transform = '';
+        });
+    }
+
+    // Reset transition state when navigating back (browser history)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted && mainContent) {
+            mainContent.classList.remove('page-transitioning');
+            mainContent.classList.add('page-ready');
+        }
+    });
+
+    // Navigation interceptor for slide-out effect
+    document.querySelectorAll('a').forEach(link => {
+        // Skip links that aren't navigation
+        if (!link.href || 
+            link.href.startsWith('javascript:') || 
+            link.hostname !== window.location.hostname || 
+            link.hash || 
+            link.getAttribute('target') === '_blank' ||
+            link.getAttribute('data-bs-toggle') ||
+            link.classList.contains('no-transition') ||
+            link.closest('form')) {
+            return;
+        }
+
+        link.addEventListener('click', function (e) {
+            const href = this.href;
+            if (!href) return;
+
+            // Don't intercept if reduced motion is preferred
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
+            e.preventDefault();
+            
+            if (mainContent) {
+                mainContent.classList.remove('page-ready');
+                mainContent.classList.add('page-transitioning');
+            }
+
+            setTimeout(() => {
+                window.location.href = href;
+            }, 250); // Balanced delay for smooth transition
         });
     });
 });

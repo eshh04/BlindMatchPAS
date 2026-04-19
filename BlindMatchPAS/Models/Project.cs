@@ -77,6 +77,21 @@ public class Project
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
+    /// Whether the student and supervisor identities have been revealed for this project.
+    /// Handled by the Admin to control the blind-matching lifecycle.
+    /// </summary>
+    public bool IsRevealed { get; set; } = false;
+
+    /// <summary>Whether the project was submitted after the deadline.</summary>
+    public bool IsLate { get; set; } = false;
+
+    /// <summary>Indicates if this is a group project (multiple students).</summary>
+    public bool IsGroupProject { get; set; } = false;
+
+    /// <summary>Comma-separated list of group member emails (excluding the submitter).</summary>
+    public string? GroupMemberEmails { get; set; }
+
+    /// <summary>
     /// Collection of match records associated with this project.
     /// A project can receive interest from multiple supervisors (one-to-many relationship).
     /// </summary>

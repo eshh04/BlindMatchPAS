@@ -1,0 +1,104 @@
+@model List<BlindMatchPAS.Models.Project>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Project Registry";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="display-5 fw-bold gradient-text mb-1">PROJECT REGISTRY</h1>
+            <p class="text-muted">Master database of all approved and on-going projects</p>
+        </div>
+        <div class="text-end d-flex gap-2">
+            <a href="?status=Approved" class="btn btn-sm btn-outline-success rounded-pill px-3">Approved</a>
+            <a href="?status=Ongoing" class="btn btn-sm btn-outline-primary rounded-pill px-3">On-going</a>
+            <a href="?status=Finished" class="btn btn-sm btn-outline-info rounded-pill px-3">Finished</a>
+            <a href="?" class="btn btn-sm btn-outline-secondary rounded-pill px-3">All</a>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        @if (Model != null)
+        {
+            @foreach (var project in Model)
+            {
+                var statusClass = project.Status switch {
+                    BlindMatchPAS.Enums.ProjectStatus.Approved => "border-success bg-success-subtle text-success",
+                    BlindMatchPAS.Enums.ProjectStatus.Ongoing => "border-primary bg-primary-subtle text-primary",
+                    BlindMatchPAS.Enums.ProjectStatus.Finished => "border-info bg-info-subtle text-info",
+                    BlindMatchPAS.Enums.ProjectStatus.Suspended => "border-danger bg-danger-subtle text-danger",
+                    _ => "border-secondary bg-light text-secondary"
+                };
+
+                <div class="col-12">
+                    <div class="glass-card p-4 border @(project.Status == BlindMatchPAS.Enums.ProjectStatus.Suspended ? "opacity-50" : "")">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <span class="badge @statusClass">@project.Status</span>
+                                    <h5 class="mb-0 fw-bold">@project.Title</h5>
+                                    @if (project.IsGroupProject)
+                                    {
+                                        <span class="badge bg-purple-subtle text-purple border border-purple">
+                                            <i class="bi bi-people-fill me-1"></i> Group
+                                        </span>
+                                    }
+                                </div>
+                                <div class="small text-muted mb-1"><i class="bi bi-person-fill me-1"></i> Student: @project.Student?.FullName</div>
+                                <div class="small text-muted"><i class="bi bi-tag-fill me-1"></i> Area: @project.ResearchArea?.Name</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="p-3 rounded-4 bg-light border border-dashed text-center">
+                                    @if (project.Matches != null && project.Matches.Any())
+                                    {
+                                        var supervisor = project.Matches.First().Supervisor;
+                                        <div class="small fw-bold">Assigned Supervisor</div>
+                                        <div class="small text-muted">@supervisor?.FullName</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="small text-muted italic">No supervisor assigned</div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 text-end">
+                                <div class="dropdown d-inline">
+                                    <button class="btn btn-light rounded-pill px-4" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i> Actions
+                                    </button>
+                                    <ul class="dropdown-menu border-0 shadow-lg p-2 rounded-4">
+                                        <li><a asp-action="ProjectDetails" asp-route-id="@project.Id" class="dropdown-item py-2 px-3 rounded-3">View Details</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form asp-action="UpdateProjectStatus" method="post">
+                                                <input type="hidden" name="projectId" value="@project.Id" />
+                                                @if (project.Status != BlindMatchPAS.Enums.ProjectStatus.Suspended) {
+                                                    <input type="hidden" name="status" value="Suspended" />
+                                                    <button type="submit" class="dropdown-item py-2 px-3 rounded-3 text-danger">Suspend Project</button>
+                                                } else {
+                                                    <input type="hidden" name="status" value="Approved" />
+                                                    <button type="submit" class="dropdown-item py-2 px-3 rounded-3 text-success">Unsuspend Project</button>
+                                                }
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section PageScripts {
+    <script>
+        setInterval(() => {
+            console.log("Projects registry sync: ACTIVE");
+        }, 5000);
+    </script>
+}

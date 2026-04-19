@@ -35,9 +35,21 @@
                     <h5 class="text-muted small">Match Confirmed</h5>
                     <p class="mb-0">@Model.MatchedAt.ToString("MMMM d, yyyy")</p>
                 </div>
+
+                <div class="mb-4">
+                    <h5 class="text-muted small">Project Type</h5>
+                    @if (Model.IsGroupProject)
+                    {
+                        <span class="badge bg-purple">Group Project</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Individual Project</span>
+                    }
+                </div>
             </div>
             <div class="card-footer">
-                <a href="/Student/Dashboard" class="btn btn-primary">Back to Dashboard</a>
+                <a href="javascript:history.back()" class="btn btn-primary">Go Back</a>
             </div>
         </div>
     </div>
