@@ -1,0 +1,215 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - BlindMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Sans', sans-serif;
+            color: #e0e0e0;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 0 20px;
+        }
+
+        .auth-card {
+            background: rgba(30, 30, 40, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #b0b0b0;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(100, 200, 255, 0.5);
+            color: #ffffff;
+            box-shadow: 0 0 0 0.2rem rgba(100, 200, 255, 0.15);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-check {
+            margin-bottom: 20px;
+        }
+
+        .form-check-input {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .form-check-input:checked {
+            background-color: #64c8ff;
+            border-color: #64c8ff;
+        }
+
+        .form-check-label {
+            color: #b0b0b0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: linear-gradient(135deg, #64c8ff 0%, #4ca8dd 100%);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #7dd9ff 0%, #5fb8ed 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(100, 200, 255, 0.3);
+            color: #ffffff;
+        }
+
+        .auth-footer {
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .auth-footer a {
+            color: #64c8ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .validation-summary {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            color: #ff6b6b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .validation-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Sign In</h1>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="validation-summary">
+                    <ul class="mb-0">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+
+            <form method="post" asp-action="Login">
+                <div class="form-group">
+                    <label asp-for="Email" class="form-label">Email Address</label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="you@example.com" />
+                    <span asp-validation-for="Email" class="validation-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="validation-message"></span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="RememberMe" type="checkbox" class="form-check-input" id="rememberMe" />
+                    <label class="form-check-label" for="rememberMe">
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-login">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                Don't have an account? <a asp-action="Register">Create one</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>
