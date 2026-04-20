@@ -5,6 +5,7 @@
     ViewData["Title"] = "User Management";
     var supervisors = (IList<ApplicationUser>)ViewBag.Supervisors;
     var students = (IList<ApplicationUser>)ViewBag.Students;
+    var admins = (IList<ApplicationUser>)ViewBag.Admins;
 }
 
 <div class="container-fluid">
@@ -60,7 +61,12 @@
     <!-- Tabs -->
     <ul class="nav nav-pills mb-4 gap-2" id="userTabs" role="tablist">
         <li class="nav-item">
-            <button class="nav-link active rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#supervisors">
+            <button class="nav-link active rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#admins">
+                <i class="bi bi-shield-lock me-2"></i> ADMINS (@admins.Count)
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link rounded-pill px-4 fw-bold" data-bs-toggle="pill" data-bs-target="#supervisors">
                 <i class="bi bi-person-badge me-2"></i> SUPERVISORS (@supervisors.Count)
             </button>
         </li>
@@ -72,7 +78,40 @@
     </ul>
 
     <div class="tab-content glass-card">
-        <div class="tab-pane fade show active" id="supervisors">
+        <div class="tab-pane fade show active" id="admins">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>IDENTITY</th>
+                            <th>COMMUNICATION</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in admins)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar bg-danger-subtle text-danger fw-bold rounded-circle flex-center" style="width: 35px; height: 35px;">
+                                            @(user.FullName?.FirstOrDefault().ToString() ?? "A")
+                                        </div>
+                                        <span class="fw-bold">@user.FullName</span>
+                                    </div>
+                                </td>
+                                <td class="text-muted">@user.Email</td>
+                                <td><span class="badge bg-danger-subtle text-danger border border-danger">System Admin</span></td>
+                                <td><span class="badge bg-success-subtle text-success border border-success">Active</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="supervisors">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead>

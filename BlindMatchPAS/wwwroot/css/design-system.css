@@ -69,8 +69,7 @@ body::before {
   padding: 3rem;
   background: transparent;
   position: relative;
-  z-index: 10;
-  transition: opacity 0.3s cubic-bezier(0, 0, 0.2, 1), transform 0.3s cubic-bezier(0, 0, 0.2, 1);
+  z-index: 1;
 }
 
 .sidebar {

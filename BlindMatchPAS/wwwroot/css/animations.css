@@ -16,7 +16,7 @@
   }
 }
 
-@keyframes slideInUp {
+/* @keyframes slideInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -25,7 +25,7 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
+} */
 
 @keyframes slideInDown {
   from {
@@ -455,9 +455,9 @@ button::after,
    FORM ANIMATIONS
    ───────────────────────────────────────────────────────────────────────── */
 
-.form-group {
+/* .form-group {
   animation: slideInUp 400ms ease-out;
-}
+} */
 
 .form-group:nth-child(1) { animation-delay: 0ms; }
 .form-group:nth-child(2) { animation-delay: 50ms; }
