@@ -155,6 +155,146 @@ using (var scope = app.Services.CreateScope())
         await userManager.AddToRoleAsync(admin, "Admin");
     }
 
+    // ── DEMO SEED DATA: Supervisors, Students & Projects ─────────────────────
+    // These accounts are pre-loaded for demonstration and presentation purposes.
+
+    // -- SUPERVISOR ACCOUNTS --
+    // All supervisors use password: Supervisor@2026!
+    var supervisorSeeds = new[]
+    {
+        ("Dr. Sarah Mitchell",   "sarah.mitchell@blindmatch.ac.uk",   "Supervisor"),
+        ("Dr. James Thornton",   "james.thornton@blindmatch.ac.uk",   "Supervisor"),
+        ("Prof. Aisha Rahman",   "aisha.rahman@blindmatch.ac.uk",     "Supervisor"),
+    };
+
+    foreach (var (name, email, role) in supervisorSeeds)
+    {
+        if (await userManager.FindByEmailAsync(email) == null)
+        {
+            var sup = new ApplicationUser
+            {
+                UserName = email, Email = email,
+                FullName = name, Role = role, EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(sup, "Supervisor@2026!");
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(sup, role);
+        }
+    }
+
+    // -- STUDENT ACCOUNTS --
+    // All students use password: Student@2026!
+    var studentSeeds = new[]
+    {
+        ("Alice Johnson",   "alice.johnson@student.ac.uk"),
+        ("Bob Perera",      "bob.perera@student.ac.uk"),
+        ("Chaya Fernando",  "chaya.fernando@student.ac.uk"),
+    };
+
+    foreach (var (name, email) in studentSeeds)
+    {
+        if (await userManager.FindByEmailAsync(email) == null)
+        {
+            var stu = new ApplicationUser
+            {
+                UserName = email, Email = email,
+                FullName = name, Role = "Student", EmailConfirmed = true
+            };
+            var result = await userManager.CreateAsync(stu, "Student@2026!");
+            if (result.Succeeded)
+                await userManager.AddToRoleAsync(stu, "Student");
+        }
+    }
+
+    // -- DEMO PROJECTS + SUPERVISOR ASSIGNMENTS --
+    // Seed only if no projects exist yet in the database.
+    if (!dbContext.Projects.Any())
+    {
+        // Look up research area IDs (seeded by EF Core HasData in DbContext)
+        var aiArea   = dbContext.ResearchAreas.FirstOrDefault(r => r.Name.Contains("Artificial") || r.Name.Contains("AI") || r.Name.Contains("Machine"));
+        var secArea  = dbContext.ResearchAreas.FirstOrDefault(r => r.Name.Contains("Cyber") || r.Name.Contains("Security"));
+        var webArea  = dbContext.ResearchAreas.FirstOrDefault(r => r.Name.Contains("Web") || r.Name.Contains("Software") || r.Name.Contains("Cloud"));
+        var fallback = dbContext.ResearchAreas.FirstOrDefault();
+
+        var alice  = await userManager.FindByEmailAsync("alice.johnson@student.ac.uk");
+        var bob    = await userManager.FindByEmailAsync("bob.perera@student.ac.uk");
+        var chaya  = await userManager.FindByEmailAsync("chaya.fernando@student.ac.uk");
+        var sarah  = await userManager.FindByEmailAsync("sarah.mitchell@blindmatch.ac.uk");
+        var james  = await userManager.FindByEmailAsync("james.thornton@blindmatch.ac.uk");
+        var aisha  = await userManager.FindByEmailAsync("aisha.rahman@blindmatch.ac.uk");
+
+        if (alice != null && bob != null && chaya != null &&
+            sarah != null && james != null && aisha != null)
+        {
+            // Create three matched projects
+            var project1 = new Project
+            {
+                StudentId      = alice.Id,
+                Title          = "AI-Powered Student Performance Prediction System",
+                Abstract       = "This project aims to develop a machine learning model that predicts student academic performance based on historical data, attendance patterns, and assignment grades. The system will provide early warnings to academic advisors so they can intervene before students fall behind.",
+                TechStack      = "Python, TensorFlow, Scikit-learn, Flask, SQLite",
+                ResearchAreaId = aiArea?.Id ?? fallback!.Id,
+                Status         = ProjectStatus.Matched,
+                SubmittedAt    = DateTime.UtcNow.AddDays(-5)
+            };
+            var project2 = new Project
+            {
+                StudentId      = bob.Id,
+                Title          = "Blockchain-Based Secure Voting System",
+                Abstract       = "A decentralised, tamper-proof digital voting platform built on blockchain technology. The system ensures voter anonymity, prevents double voting, and provides a transparent audit trail. Designed for university student union elections.",
+                TechStack      = "Solidity, Ethereum, React, Node.js, MetaMask",
+                ResearchAreaId = secArea?.Id ?? fallback!.Id,
+                Status         = ProjectStatus.Matched,
+                SubmittedAt    = DateTime.UtcNow.AddDays(-3)
+            };
+            var project3 = new Project
+            {
+                StudentId      = chaya.Id,
+                Title          = "Real-Time Collaborative Code Editor with AI Assistance",
+                Abstract       = "A web-based IDE that allows multiple developers to collaborate in real time, similar to Google Docs but for code. Integrates an AI assistant powered by a language model to suggest completions, detect bugs, and explain code snippets inline.",
+                TechStack      = "ASP.NET Core, SignalR, React, OpenAI API, SQLite",
+                ResearchAreaId = webArea?.Id ?? fallback!.Id,
+                Status         = ProjectStatus.Matched,
+                SubmittedAt    = DateTime.UtcNow.AddDays(-1)
+            };
+
+            dbContext.Projects.AddRange(project1, project2, project3);
+            await dbContext.SaveChangesAsync();
+
+            // Create confirmed Match records (supervisor assignments) for each project
+            dbContext.Matches.AddRange(
+                new Match
+                {
+                    ProjectId    = project1.Id,
+                    SupervisorId = sarah.Id,
+                    Status       = MatchStatus.Confirmed,
+                    IsRevealed   = true,
+                    CreatedAt    = DateTime.UtcNow.AddDays(-4),
+                    ConfirmedAt  = DateTime.UtcNow.AddDays(-3)
+                },
+                new Match
+                {
+                    ProjectId    = project2.Id,
+                    SupervisorId = james.Id,
+                    Status       = MatchStatus.Confirmed,
+                    IsRevealed   = true,
+                    CreatedAt    = DateTime.UtcNow.AddDays(-2),
+                    ConfirmedAt  = DateTime.UtcNow.AddDays(-1)
+                },
+                new Match
+                {
+                    ProjectId    = project3.Id,
+                    SupervisorId = aisha.Id,
+                    Status       = MatchStatus.Confirmed,
+                    IsRevealed   = true,
+                    CreatedAt    = DateTime.UtcNow.AddDays(-1),
+                    ConfirmedAt  = DateTime.UtcNow
+                }
+            );
+            await dbContext.SaveChangesAsync();
+        }
+    }
+
     // --- DATA REPAIR: Ensure all confirmed matches are revealed ---
     var confirmedMatches = await dbContext.Matches
         .Where(m => m.Status == MatchStatus.Confirmed && !m.IsRevealed)

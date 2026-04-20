@@ -173,21 +173,47 @@ namespace BlindMatchPAS.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult RegisterUser()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> RegisterUserManual(string email, string fullName, string role, string password)
         {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(fullName) ||
+                string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(password))
+            {
+                TempData["ErrorMessage"] = "All fields are required.";
+                return RedirectToAction("UserManagement");
+            }
+
+            var existing = await _userManager.FindByEmailAsync(email);
+            if (existing != null)
+            {
+                TempData["ErrorMessage"] = $"An account with email '{email}' already exists.";
+                return RedirectToAction("UserManagement");
+            }
+
             var user = new ApplicationUser
             {
                 UserName = email,
                 Email = email,
                 FullName = fullName,
-                Role = role
+                Role = role,
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, role);
+                TempData["SuccessMessage"] = $"{role} account for '{fullName}' created successfully!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = string.Join(" ", result.Errors.Select(e => e.Description));
             }
 
             return RedirectToAction("UserManagement");
