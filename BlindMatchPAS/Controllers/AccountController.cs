@@ -208,4 +208,105 @@ public class AccountController : Controller
     {
         return RedirectToAction("Login", new { error = "access_denied" });
     }
+
+    /// <summary>
+    /// GET: /Account/ForgotPassword
+    /// Displays the forgot password form where the user enters their email.
+    /// </summary>
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    /// <summary>
+    /// POST: /Account/ForgotPassword
+    /// Verifies the email exists and redirects to the reset password page.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ModelState.AddModelError(string.Empty, "Please enter your email address.");
+            return View();
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "No account found with that email address.");
+            return View();
+        }
+
+        // Redirect directly to the reset form — no email token required (local system)
+        return RedirectToAction("ResetPassword", new { email = email });
+    }
+
+    /// <summary>
+    /// GET: /Account/ResetPassword
+    /// Displays the password reset form for the verified email.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> ResetPassword(string? email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+            return RedirectToAction("ForgotPassword");
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return RedirectToAction("ForgotPassword");
+
+        ViewBag.Email = email;
+        ViewBag.FullName = user.FullName;
+        return View();
+    }
+
+    /// <summary>
+    /// POST: /Account/ResetPassword
+    /// Directly resets the user password using Identity's token-based reset.
+    /// Works locally without email — generates and immediately consumes the token.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(string email, string newPassword, string confirmPassword)
+    {
+        ViewBag.Email = email;
+
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 8)
+        {
+            ModelState.AddModelError(string.Empty, "Password must be at least 8 characters long.");
+            return View();
+        }
+
+        if (newPassword != confirmPassword)
+        {
+            ModelState.AddModelError(string.Empty, "Passwords do not match.");
+            return View();
+        }
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "Account not found.");
+            return View();
+        }
+
+        // Generate a reset token and immediately use it (local system — no email needed)
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+        if (result.Succeeded)
+        {
+            _logger.LogInformation("Password reset successfully for user {Email}", email);
+            TempData["SuccessMessage"] = "Password reset successfully! You can now log in with your new password.";
+            return RedirectToAction("Login");
+        }
+
+        foreach (var error in result.Errors)
+            ModelState.AddModelError(string.Empty, error.Description);
+
+        return View();
+    }
 }

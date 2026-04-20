@@ -1,0 +1,133 @@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Register New User";
+}
+
+<div class="container-fluid">
+    <div class="d-flex align-items-center mb-5 gap-3">
+        <a asp-action="UserManagement" class="btn btn-outline-secondary rounded-circle p-2" style="width:42px;height:42px;display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-arrow-left fs-5"></i>
+        </a>
+        <div>
+            <h1 class="display-5 fw-bold gradient-text mb-0">REGISTER USER</h1>
+            <p class="text-muted mb-0">Create a new account in the BlindMatch system</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="glass-card p-5">
+
+                <form asp-action="RegisterUserManual" method="post" id="registerForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">FULL NAME</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-person text-muted"></i>
+                            </span>
+                            <input type="text" name="fullName" id="fullName"
+                                   class="form-control border-start-0 py-3"
+                                   placeholder="e.g. Dr. John Smith"
+                                   autocomplete="off" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">EMAIL ADDRESS</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-envelope text-muted"></i>
+                            </span>
+                            <input type="email" name="email" id="email"
+                                   class="form-control border-start-0 py-3"
+                                   placeholder="user@blindmatch.ac.uk"
+                                   autocomplete="off" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">ROLE</label>
+                        <select name="role" id="role" class="form-select py-3 rounded-3">
+                            <option value="Student">🎓 Student</option>
+                            <option value="Supervisor" selected>👤 Supervisor</option>
+                            <option value="Admin">🛡️ Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">INITIAL PASSWORD</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-shield-lock text-muted"></i>
+                            </span>
+                            <input type="password" name="password" id="password"
+                                   class="form-control border-start-0 py-3"
+                                   placeholder="Min 8 chars, uppercase, number, symbol"
+                                   value="User@2026!" required />
+                            <button type="button" class="btn btn-outline-secondary border-start-0"
+                                    onclick="togglePwd()" id="toggleBtn" title="Show/hide password">
+                                <i class="bi bi-eye" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">User will be able to change this after first login.</small>
+                    </div>
+
+                    <div class="alert alert-info border-0 rounded-3 small py-2 mb-4">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Password requirements: uppercase letter, digit, and special character (e.g. <code>User@2026!</code>)
+                    </div>
+
+                    <div class="d-flex gap-3">
+                        <a asp-action="UserManagement" class="btn btn-outline-secondary flex-fill py-3">
+                            <i class="bi bi-x-circle me-2"></i> CANCEL
+                        </a>
+                        <button type="submit" class="btn btn-primary-gradient flex-fill py-3">
+                            <i class="bi bi-person-check me-2"></i> AUTHORIZE ACCESS
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .input-group-text {
+        border: 1px solid var(--color-border-primary);
+        border-radius: 0.5rem 0 0 0.5rem;
+    }
+    .form-control, .form-select {
+        border: 1px solid var(--color-border-primary);
+    }
+    .form-control {
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .form-select {
+        border-radius: 0.5rem;
+    }
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+        border-color: var(--color-purple);
+    }
+    .input-group .btn-outline-secondary {
+        border-radius: 0 0.5rem 0.5rem 0 !important;
+        border: 1px solid var(--color-border-primary);
+    }
+</style>
+
+<script>
+    function togglePwd() {
+        const pwd = document.getElementById('password');
+        const icon = document.getElementById('eyeIcon');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            pwd.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+</script>
