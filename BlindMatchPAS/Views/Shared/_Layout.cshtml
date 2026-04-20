@@ -82,8 +82,11 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="nav-link btn btn-link text-dark fw-medium border-0">Logout</button>
+                                <span class="nav-link text-dark fw-medium">@User.Identity.Name</span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline" id="logoutForm">
+                                    <button type="submit" class="nav-link btn btn-link text-dark fw-medium border-0" id="headerLogoutBtn">Logout</button>
                                 </form>
                             </li>
                         }

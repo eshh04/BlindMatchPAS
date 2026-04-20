@@ -147,7 +147,8 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <h1>Create Account</h1>
+                <h1>Student Registration</h1>
+                <p class="text-muted small mt-2">Join BlindMatch PAS to start your matching process</p>
             </div>
 
             @if (!ViewData.ModelState.IsValid)
@@ -166,37 +167,29 @@
             }
 
             <form method="post" asp-action="Register">
+                <input type="hidden" asp-for="Role" value="Student" />
+
                 <div class="form-group">
                     <label asp-for="FullName" class="form-label">Full Name</label>
-                    <input asp-for="FullName" type="text" class="form-control" placeholder="Jane Doe" />
+                    <input asp-for="FullName" type="text" class="form-control" placeholder="Jane Doe" required />
                     <span asp-validation-for="FullName" class="validation-message"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="Email" class="form-label">Email Address</label>
-                    <input asp-for="Email" type="email" class="form-control" placeholder="jane@university.edu" />
+                    <input asp-for="Email" type="email" class="form-control" placeholder="jane@university.edu" required />
                     <span asp-validation-for="Email" class="validation-message"></span>
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="Role" class="form-label">I am a...</label>
-                    <select asp-for="Role" class="form-select">
-                        <option value="">-- Select Role --</option>
-                        <option value="Student">Student</option>
-                        <option value="Supervisor">Supervisor / Faculty</option>
-                    </select>
-                    <span asp-validation-for="Role" class="validation-message"></span>
-                </div>
-
-                <div class="form-group">
                     <label asp-for="Password" class="form-label">Password</label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
                     <span asp-validation-for="Password" class="validation-message"></span>
                 </div>
 
                 <div class="form-group">
                     <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
-                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="••••••••" />
+                    <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="••••••••" required />
                     <span asp-validation-for="ConfirmPassword" class="validation-message"></span>
                 </div>
 

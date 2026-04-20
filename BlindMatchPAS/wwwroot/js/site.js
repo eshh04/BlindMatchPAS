@@ -88,22 +88,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- PREMIUM PAGE TRANSITIONS ---
+    /* --- PREMIUM PAGE TRANSITIONS (Disabled for QA Testing) ---
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
-        // Subtle initial offset for entrance
         mainContent.style.transform = 'translateY(10px)';
         mainContent.style.opacity = '0';
         
         requestAnimationFrame(() => {
             mainContent.classList.add('page-ready');
-            // Remove inline overrides to allow CSS class to take over
             mainContent.style.opacity = '';
             mainContent.style.transform = '';
         });
     }
 
-    // Reset transition state when navigating back (browser history)
     window.addEventListener('pageshow', (event) => {
         if (event.persisted && mainContent) {
             mainContent.classList.remove('page-transitioning');
@@ -111,9 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Navigation interceptor for slide-out effect
     document.querySelectorAll('a').forEach(link => {
-        // Skip links that aren't navigation
         if (!link.href || 
             link.href.startsWith('javascript:') || 
             link.hostname !== window.location.hostname || 
@@ -129,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const href = this.href;
             if (!href) return;
 
-            // Don't intercept if reduced motion is preferred
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 return;
             }
@@ -143,7 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             setTimeout(() => {
                 window.location.href = href;
-            }, 250); // Balanced delay for smooth transition
+            }, 250);
         });
     });
+    */
 });

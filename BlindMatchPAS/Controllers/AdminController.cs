@@ -169,6 +169,7 @@ namespace BlindMatchPAS.Controllers
         {
             ViewBag.Supervisors = await _userManager.GetUsersInRoleAsync("Supervisor");
             ViewBag.Students = await _userManager.GetUsersInRoleAsync("Student");
+            ViewBag.Admins = await _userManager.GetUsersInRoleAsync("Admin");
             return View();
         }
 

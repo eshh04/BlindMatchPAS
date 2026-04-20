@@ -141,11 +141,12 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Security: Block Admin role registration (Admin is seeded only)
-            if (string.IsNullOrEmpty(model.Role) ||
-                (model.Role != "Student" && model.Role != "Supervisor"))
+            // Security: Public registration is restricted to Students ONLY.
+            // Supervisors and Admins must be registered via the Admin User Management portal.
+            if (model.Role != "Student")
             {
-                ModelState.AddModelError(nameof(model.Role), "Invalid role selection");
+                _logger.LogWarning("Security Breach Attempt: Public registration attempted for unauthorized role: {Role}", model.Role);
+                ModelState.AddModelError(nameof(model.Role), "Only student registration is permitted through this portal. Please contact your administrator for other account types.");
                 return View(model);
             }
 
